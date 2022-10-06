@@ -1,0 +1,42 @@
+.activity_list{
+    display: flex;
+    width: 400px;
+    -ms-flex-direction:column;
+    flex-direction:column;
+  }
+.activity_list Text{
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  color: #b0b5b8ee;
+}
+.activityTag{
+  margin-top: 10px;
+  margin-right: 15px;
+  background-color: #d787e2ee;
+  color: #f5f3f3ee;
+}
+.gap-2{
+  width:100%;
+  height:20rpx;
+}
+.adminIcon{
+  position:relative;
+  text-align: right;
+}
+.message{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 20px;
+  font-size: 22px;
+  color:rgb(238, 27, 27);
+}
+.deny{
+  visibility: hidden;
+}
+// .permit{
+//   float:right;
+// }
+// .delete{
+//   float:right;
+// }

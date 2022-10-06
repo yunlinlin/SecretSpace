@@ -1,0 +1,86 @@
+.none-list Text{
+  display: flex;
+  justify-content: center;
+  margin-top: 200rpx;
+  font-size: 32rpx;
+  color: rgb(123, 123, 123);
+}
+
+.main {
+  display: flex;
+  align-items: flex-start;
+}
+
+.column {
+  width: 50%;
+}
+
+.column_item {
+  width: 305rpx;
+  border-radius: 15rpx;
+  border-style: solid;
+  border-width: 3rpx;
+  border-color: rgb(27, 149, 210);
+  padding: 20rpx;
+  margin: 0rpx 15rpx;
+}
+
+.user_msg{
+  width: 100%;
+  margin-bottom: 10rpx;
+  font-size: 35rpx;
+}
+
+.user_msg Image{
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 10rpx;
+  vertical-align: middle;
+}
+
+.user_msg Text{
+  vertical-align: middle;
+}
+
+.time{
+  margin-left: 15rpx;
+  font-size: 25rpx;
+  color: rgb(117, 135, 143);
+  vertical-align: middle;
+}
+
+.column_pic {
+  // display: block;
+  width: 305rpx;
+}
+
+.topic{
+  padding-top: 15rpx;
+  font-size: 35rpx;
+  // background-color: aquamarine;
+  font-weight: bolder;
+}
+
+.column-msg{
+  margin-top: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.column-msg Text{
+  margin: auto 10rpx;
+  font-size: 25rpx;
+  color: rgb(123, 123, 123);
+}
+
+.like{
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.store{
+  width: 30rpx;
+  height: 30rpx;
+}

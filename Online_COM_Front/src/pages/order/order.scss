@@ -1,0 +1,23 @@
+// .container{
+//     padding: 20rpx;
+//   }
+.ListTitle{
+  padding: 10px 10px;
+  margin-top: 5px;
+  text-align: center;
+  font-size: medium;
+}
+.ListContent{
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  -ms-transform: translate(-50%, -50%);
+  padding: 20px 20px;
+  width: 90%;
+  align-self: center;
+  margin-bottom: 5px;
+  border-radius: 5mm;
+  background-color: #17c0c0;
+  text-align: center;
+}

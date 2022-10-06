@@ -1,0 +1,212 @@
+@import '../../../node_modules/taro-ui/dist/style/variables/default.scss';
+@import '../../../node_modules/taro-ui/dist/style/mixins/index.scss';
+
+.at-article {
+  word-break: break-all;
+  word-wrap: break-word;
+  line-height: $line-height-zh;
+  background-color: rgb(250, 250, 250);
+
+  /* elements */
+  &__h1,
+  &__h2,
+  &__h3 {
+    // margin: 0 20px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    color: rgb(0, 0, 0);
+    font-weight: bolder;
+  }
+
+  &__h1 {
+    margin-top: 30px;
+    font-size: 48px;
+    line-height: 72px;
+  }
+
+  &__info {
+    margin: 0 30px;
+    color: $color-grey-3;
+    font-size: $font-size-base;
+    line-height: 42px;
+  }
+
+  &__h2 {
+    margin-top: 30px;
+    font-size: $font-size-xxl;
+    line-height: 60px;
+  }
+
+  &__h3 {
+    font-size: $font-size-lg;
+    line-height: 48px;
+  }
+
+  &__p {
+    margin: 25px 30px 0;
+    color: rgb(0, 0, 0);
+    font-size: 32rpx;
+    line-height: 42px;
+    white-space:pre-wrap;
+  }
+
+  &__img {
+    display: block;
+    margin: 20px auto 0;
+    width: 690px;
+    border-radius: 4px;
+  }
+}
+
+.image-box{
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20rpx;
+  width: 100%;
+}
+
+.image-item{
+  width: 30%;
+  height: 240rpx;
+  position: relative;
+  margin-right: 2%;
+  margin-bottom: 2%;
+  border: 1px solid #c0ccda;
+}
+
+.image-item-i{
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.comment{
+  padding-bottom: 300rpx;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  background-color: rgb(240, 240, 240);
+}
+
+.none{
+  display: flex;
+  justify-content: center;
+  padding-top: 50rpx;
+  font-size: 32rpx;
+  color: rgb(123, 123, 123);
+}
+
+.comment-title{
+  padding-top: 50rpx;
+  padding-bottom: 20rpx;
+  display: flex;
+  width: 750rpx;
+  justify-content: center;
+  font-size: 40rpx;
+  color: rgb(0, 0, 0);
+  background-color: rgb(240, 240, 240);
+}
+
+.comment-fab{
+  position: fixed;
+  left: 275rpx;
+  bottom: 80rpx;
+  background-color: rgb(206, 219, 62);
+  height: 80rpx;
+  width: 200rpx;
+  border-radius: 3mm;
+}
+
+.comment-submit{
+  margin: 20rpx auto ;
+  padding: 20rpx 10rpx;
+  display: flex;
+  justify-content: center;
+  background-color: rgb(25, 160, 200);
+  border-radius: 3mm;
+}
+
+.comment-list{
+  margin: 0 auto;
+}
+
+.comment-content{
+  margin: 20rpx auto;
+}
+
+.comment-msg{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 70rpx;
+}
+
+.user-image{
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 10rpx;
+}
+
+.user-nickname{
+  margin-left: 10rpx;
+  font-size: 32rpx;
+}
+
+.comment-nobody{
+  visibility: hidden;
+}
+
+.comment-likecount{
+  position: absolute;
+  top: 20rpx;
+  right: 60rpx;
+  font-size: 30rpx;
+}
+
+.unliked{
+  position: absolute;
+  margin-left: 10rpx;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.liked{
+  position: absolute;
+  right: -10rpx;
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.option{
+  margin-top: 20rpx;
+  display: flex;
+  align-items: flex-start;
+}
+
+.option-like{
+  height: 100rpx;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-store{
+  height: 100rpx;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-like{
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.image-store{
+  width: 50rpx;
+  height: 50rpx;
+}

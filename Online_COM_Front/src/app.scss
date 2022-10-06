@@ -1,0 +1,14 @@
+/**app.wxss**/
+@import "~taro-ui/dist/style/index.scss";
+
+
+.container {
+  height: 100%;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+} 
+

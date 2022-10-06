@@ -1,0 +1,53 @@
+.container{
+    left: 10px;
+    right:10px;
+}
+
+.classList{
+  &__item {
+    font-size: 30 rpx;
+  }
+}
+
+.time-range{
+  padding: 15rpx 10rpx;
+  margin-bottom: 15rpx;
+  width: 100%;
+  display: flex;
+  text-align: left;
+}
+
+.time-rangeTag{
+  padding: 5rpx 8rpx;
+  margin-left: 20rpx;
+  border-style: solid;
+  border-width: 3rpx;
+  border-radius: 4mm;
+  border-color: rgb(50, 215, 70);
+  font-size: 30 rpx;
+}
+
+.active{
+  color:rgb(250, 250, 250);
+  background-color: rgb(50, 215, 70);
+}
+
+.inactive{
+  color: rgb(50, 215, 70);
+}
+
+.at-fab__icon{
+  position: fixed;
+  right: 32px;
+  bottom: 80px;
+  background-color: rgb(219, 62, 219);
+  height:80px;
+  width:80px;
+}
+.at-fab__icon Text{
+  position:relative;
+  transform: translate(0%, -8%);
+  -ms-transform: translate(0%, -8%);
+  font-size: 60px;
+  color: rgb(250, 250, 250);
+}

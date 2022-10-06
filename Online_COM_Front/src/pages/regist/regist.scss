@@ -1,0 +1,83 @@
+.container{
+    margin: 10% auto;
+}
+.container Text{
+    margin: 0 auto;
+    font-size: 50px;
+}
+.regist-box{
+    padding-top: 30px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: left;
+    width: 50%;
+    -ms-transform: translateX(-13%);
+    transform:translateX(-13%);
+}
+.regist-box Text{
+    // margin-right: 20px;
+    font-size: 35px;
+}
+.input{
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width:450px;
+    border-style: solid;
+    border-radius: 2mm;
+    border-width: 3px;
+    border-color: rgb(57, 165, 214);
+}
+.code{
+    width: 500px;
+  }
+.code-input{
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 200px;
+    border-style: solid;
+    border-radius: 2mm;
+    border-width: 3px;
+    border-color: rgb(57, 165, 214);
+    display:block;
+    // align-items: center;
+    float: left;
+}
+.update-phone-code{
+    margin-left: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-radius: 2mm;
+    font-size: 25px;
+    background-color: rgb(215, 224, 221);
+    display:block;
+    // align-items: center;
+    float: left;
+    text-align: center;
+}
+.onloading{
+    color: rgb(187, 192, 190);
+}
+.message{
+    position:absolute;
+    font-size: 22px;
+    color:rgb(238, 27, 27);
+}
+.correct{
+    visibility: hidden;
+    // position:absolute;
+}
+.submit{
+    position: relative;
+    top: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 30px;
+    border-radius: 3mm;
+    background-color: rgb(65, 193, 216);
+}

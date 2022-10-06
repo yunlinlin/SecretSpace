@@ -1,0 +1,48 @@
+.container{
+    margin: 30% auto;
+}
+.title{
+    margin: 0 auto;
+    font-size: 50rpx;
+}
+.login-box{
+    padding-top: 30rpx;
+}
+.login-box Text{
+    margin-right: 20px;
+    font-size: 35px;
+    vertical-align: middle;
+}
+.login-box Input{
+    padding-left: 10rpx;
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
+    border-style: solid;
+    border-radius: 2mm;
+    border-width: 3rpx;
+    border-color: rgb(57, 165, 214);
+    display: inline-block;
+    vertical-align: middle;
+}
+.submit{
+    position: relative;
+    top: 40rpx;
+    padding: 20rpx 40rpx;
+    margin-bottom: 20rpx;
+    font-size: 30rpx;
+    border-radius: 3mm;
+    background-color: rgb(65, 193, 216);
+}
+.sign-box{
+    padding-top: 30rpx
+}
+.sign-box Text{
+    padding-left: 40rpx;
+    display: inline-block;
+    font-size: 30rpx;
+    color: rgb(57, 165, 214);
+    &:hover {
+        text-decoration: underline;
+        color: rgb(57, 165, 214);
+    }
+}

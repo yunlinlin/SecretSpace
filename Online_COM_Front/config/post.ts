@@ -58,8 +58,8 @@ class Post extends Component{
                         resolve(res);
                     }
                 },
-                fail : () => {
-                    console.log(reject);
+                fail : (error) => {
+                    reject(error);
                     Taro.showToast({
                         title: '网络错误',
                         icon: 'error',

@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { Component } from 'react'
-import { View, Text ,Image, Input, Swiper, SwiperItem} from '@tarojs/components'
-import {Page} from '../../Constant/func_list'
+import { View, Text ,Image, Input, Swiper, SwiperItem } from '@tarojs/components'
+import { Page } from '../../Constant/func_list'
 import './index.scss'
 
 // #region 书写注意
@@ -34,8 +34,6 @@ interface Home {
   state: PageState;
   props: IProps;
 }
-
-const app = Taro.getApp();
 
 class Home extends Component{
   componentWillReceiveProps (nextProps) {

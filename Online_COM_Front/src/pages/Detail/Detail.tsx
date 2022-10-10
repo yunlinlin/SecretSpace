@@ -22,12 +22,8 @@ type PageState = {
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-// interface Detail{
-//   props: IProps;
-//   state: PageState;
-// }
-
 const app = Taro.getApp();
+let timer;
 
 class Detail extends Component<IProps, PageState>{
   constructor(props){
@@ -44,6 +40,34 @@ class Detail extends Component<IProps, PageState>{
   }
 
   componentDidMount(){
+    this.loadList();
+  }
+
+  componentWillReceiveProps (nextProps) {
+    console.log(this.props, nextProps)
+  }
+
+  shouldComponentUpdate(nextState){
+    if(this.state !== nextState){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  componentWillUnmount () {
+    clearTimeout(timer);
+  }
+
+  $instance = getCurrentInstance()
+
+  componentDidlUpdate(){ }
+  
+  componentDidShow () { }
+
+  componentDidHide () { }
+
+  loadList(){
     let promise = app.post.request(
       this.$instance.router?.params.url + '/detail',
       'GET',
@@ -73,28 +97,6 @@ class Detail extends Component<IProps, PageState>{
     })
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
-  }
-
-  shouldComponentUpdate(nextState){
-    if(this.state !== nextState){
-      return true;
-    }else{
-      return false;
-    }
-  }
-
-  componentWillUnmount () { }
-
-  $instance = getCurrentInstance()
-
-  componentDidlUpdate(){ }
-  
-  componentDidShow () { }
-
-  componentDidHide () { }
-
   ToComment(){
     this.setState({
       OnComment: true,
@@ -116,24 +118,27 @@ class Detail extends Component<IProps, PageState>{
         comment : this.state.uploadComment,
         id : JSON.parse(this.$instance.router?.params.id ? this.$instance.router?.params.id : '0'),
       }
-    ).catch((error) => {
-      console.log(error);     
-      Taro.showToast({
-        title: '上传评论失败',
-        icon: 'error',
-        duration: 2000
-      })
-    })
+    );
     promise.then(() => {
       Taro.showToast({
         title: '上传评论成功',
         icon: 'success',
         duration: 2000
       });
-      setTimeout(() =>{
+      timer = setTimeout(() =>{
         this.setState({
         OnComment: false,
-      })}, 1000)
+        uploadComment: '',
+        });
+        this.loadList();
+      }, 1000)
+    }).catch((error) => {
+      console.log(error);     
+      Taro.showToast({
+        title: '上传评论失败',
+        icon: 'error',
+        duration: 2000
+      })
     })
   }
 
@@ -260,7 +265,7 @@ class Detail extends Component<IProps, PageState>{
                       return(
                         <View key={index} className='image-item'>
                           <Image  className='image-item-i' 
-                            src={app.config.file + item.localPath} mode='widthFix' onClick={this.preview.bind(this, index)}
+                            src={app.config.file + item.localPath} mode='aspectFill' onClick={this.preview.bind(this, index)}
                           />
                         </View>
                       )
@@ -270,22 +275,40 @@ class Detail extends Component<IProps, PageState>{
               </View>
             </View>
           </View>
+          <Image className='divider' mode='widthFix' src={app.config.file + '/divider.png'} />
           <View className='option'>
             <View className='option-like'>
               {
                 this.state.liked === true ? <Image className='image-like' src={app.config.file + '/item_liked.png'} onClick={() => this.itemLike()} /> : 
                 <Image className='image-like' src={app.config.file + '/item_unlike.png'} onClick={() => this.itemLike()} />
               }
+              <Text>喜欢</Text>
             </View>
             <View className='option-store'>
               {
                 this.state.stored === true ? <Image className='image-store' src={app.config.file + '/stored.png'} onClick={() => this.itemStore()} /> : 
                 <Image className='image-store' src={app.config.file + '/unstore.png'} onClick={() => this.itemStore()} />
+                
               }
+              <Text>添加至日程表</Text>
             </View>
           </View>
         </View>
       )
+    }else if(this.$instance.router?.params.class === 'feedback'){
+      return(
+        <View>
+          <View className='at-article'>
+            <View className='at-article__h1'>
+              {this.state.detail.topicValue}
+            </View>
+            <View className='at-article__info'>
+              {this.state.detail.created_at}&nbsp;&nbsp;&nbsp;{this.state.detail.nickname}
+            </View>
+          </View>
+        </View>
+      )
+
     }else{
       return (
         <View>
@@ -317,18 +340,21 @@ class Detail extends Component<IProps, PageState>{
               </View>
             </View>
           </View>
+          <Image className='divider' mode='widthFix' src={app.config.file + '/divider.png'} />
           <View className='option'>
             <View className='option-like'>
               {
                 this.state.liked === true ? <Image className='image-like' src={app.config.file + '/item_liked.png'} onClick={() => this.itemLike()} /> : 
                 <Image className='image-like' src={app.config.file + '/item_unlike.png'} onClick={() => this.itemLike()} />
               }
+              <Text>喜欢</Text>
             </View>
             <View className='option-store'>
               {
                 this.state.stored === true ? <Image className='image-store' src={app.config.file + '/stored.png'} onClick={() => this.itemStore()} /> : 
                 <Image className='image-store' src={app.config.file + '/unstore.png'} onClick={() => this.itemStore()} />
               }
+              <Text>收藏</Text>
             </View>
           </View>
           <Text className='comment-title'>留言栏</Text>

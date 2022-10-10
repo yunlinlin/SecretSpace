@@ -1,3 +1,3 @@
 export default definePageConfig({
-    navigationBarTitleText: '实习招募'
+    navigationBarTitleText: '校园生活问题反馈'
   })

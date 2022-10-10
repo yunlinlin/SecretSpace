@@ -72,7 +72,7 @@ class Falls extends Component<IProps, PageState>{
           if(res.data[i].image.length !== 0){
             imageHeight[i] = res.data[i].image[0].height * imgWidth / res.data[i].image[0].width;        //比例计算
           }else{
-            imageHeight[i] = 305.0;
+            imageHeight[i] = 305.0; //默认图片尺寸
           }
         }
         let columnHeight = [0, 0];

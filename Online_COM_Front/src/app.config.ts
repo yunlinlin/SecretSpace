@@ -4,8 +4,8 @@ export default defineAppConfig({
   pages: [
     'pages/door/door',
     'pages/login/login',
-    'pages/index/index',
     'pages/regist/regist',
+    'pages/index/index',
     'pages/activity/activity',
     'pages/order/order',
     'pages/user/user',

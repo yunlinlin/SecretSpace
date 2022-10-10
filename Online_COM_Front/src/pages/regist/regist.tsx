@@ -35,6 +35,7 @@ type PageState = {
   addressError: number,
   passwordError: number,
   codeError: number,
+  randomTimer: any,
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -61,6 +62,7 @@ class Regist extends Component{
       addressError: 0,
       passwordError: 0,
       codeError: 0,
+      randomTimer: '',
     }
   }
 
@@ -70,7 +72,9 @@ class Regist extends Component{
     console.log(this.props, nextProps)
   }
 
-  componentWillUnmount () { }
+  componentWillUnmount () {
+    clearInterval(this.state.randomTimer);
+   }
 
   componentDidShow () { }
 
@@ -160,8 +164,10 @@ class Regist extends Component{
 
   sendCode(){
     if(this.state.uidError + this.state.addressError + this.state.passwordError === 0 && this.state.name !== '' && this.state.password !== ''){
-      this.setState({loading: true});
-      setInterval(() => { code = Math.random().toFixed(6).slice(-6) }, 1000*60*5);
+      this.setState({
+        loading: true,
+        randomTimer: setInterval(() => { code = Math.random().toFixed(6).slice(-6) }, 1000*60*5),
+      });
       Taro.request({
         url: app.config.api + '/users/sendEmail',
         method: 'POST',

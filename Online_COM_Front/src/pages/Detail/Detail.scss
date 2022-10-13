@@ -1,6 +1,7 @@
 @import '../../../node_modules/taro-ui/dist/style/variables/default.scss';
 @import '../../../node_modules/taro-ui/dist/style/mixins/index.scss';
 
+/***************** 内容部分 ***************/
 .at-article {
   word-break: break-all;
   word-wrap: break-word;
@@ -11,7 +12,7 @@
   &__h1,
   &__h2,
   &__h3 {
-    // margin: 0 20px;
+    margin: 0 20px;
     margin-top: 10px;
     margin-bottom: 0px;
     color: rgb(0, 0, 0);
@@ -25,7 +26,7 @@
   }
 
   &__info {
-    margin: 0 30px;
+    margin: 0 20px;
     color: $color-grey-3;
     font-size: $font-size-base;
     line-height: 42px;
@@ -84,6 +85,7 @@
   width: 100%;
 }
 
+/******************** 评论区 ********************/
 .comment{
   padding-bottom: 300rpx;
   padding-left: 20rpx;
@@ -183,6 +185,7 @@
   height: 60rpx;
 }
 
+/***************** 喜欢和收藏操作区 *****************/
 .option{
   margin-top: 20rpx;
   display: flex;
@@ -223,4 +226,116 @@
 .image-store{
   width: 50rpx;
   height: 50rpx;
+}
+
+/******************* 问题反馈区 ****************/
+.feedback-time{
+  margin: 10rpx 20rpx;
+  text-align: center;
+  font-size: 25rpx;
+  color: rgb(123, 123, 123);
+}
+
+.feedback-Q, .feedback-A{
+  margin: 20rpx 20rpx;
+  height: auto;
+  display: flex;
+  color: rgb(123, 123, 123);
+}
+
+.feedback-Q{
+  justify-content: flex-start;
+}
+
+.feedback-A{
+  justify-content: flex-end;
+}
+
+.avatar{
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.message-Q{
+  padding-right: auto;
+  margin-left: 10rpx;
+  text-align: left;
+}
+
+.message-A{
+  padding-left: auto;
+  margin-right: 10rpx;
+  text-align: right;
+}
+
+.content-A, .content-Q{
+  position: relative;
+  max-width: 500rpx;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid #ccc;
+  margin-top: 5rpx;
+  border-radius: 10rpx;
+  word-break: break-all;
+  text-align: justify;
+  color: rgb(0, 0, 0);
+  font-size: 35rpx;
+}
+
+.content-Q{
+  margin-left: 10rpx;
+  background-color: rgb(25, 160, 200);
+}
+
+.content-A{
+  margin-right: 10rpx;
+  background-color: rgb(200, 110, 25);
+}
+
+.triangle-Q,
+.triangle-A {
+    position: absolute;
+    top: 5rpx;
+    border-width: 10rpx;
+    border-style: solid;
+}
+
+.triangle-Q{
+    left: -21rpx;
+    border-color: transparent rgb(25, 160, 200) transparent transparent;
+}
+
+.triangle-A{
+    right: -21rpx;
+    border-color: transparent transparent transparent rgb(200, 110, 25);
+}
+
+.image-feedback{
+  margin: 5rpx 10rpx;
+}
+
+/********************追加反馈****************/
+.title{
+  position:relative;
+  top: 5px;
+  left: 0%;
+  width: 100%;
+  height: 60px;
+  box-sizing: border-box;
+}
+.title-dot{
+  position: absolute;
+  top: 15px;
+  left: 10px;
+  width: 15px;
+  height: 15px;
+  margin: 5px;
+  background-color: rgb(62, 148, 219);
+}
+.act-title{
+  position: absolute;
+  top: 5px;
+  left: 35px;
+  height: auto;
+  font-size: 32px;
 }

@@ -92,7 +92,7 @@ class Falls extends Component<IProps, PageState>{
       }
     }).catch((error) => {
       Taro.showToast({
-        title: error.message,
+        title: error,
         icon: 'error',
         duration: 2000,
       })

@@ -9,7 +9,7 @@
     width:100%;
     height:20rpx;
 }
-.submit{
+.submit, .no-submit{
   position: relative;
   top: 40px;
   padding-left: 40px;
@@ -17,7 +17,16 @@
   padding-top: 20px;
   padding-bottom: 20px;
   border-radius: 3mm;
+}
+
+.submit{
   background-color: rgb(65, 193, 216);
+  color: rgb(0, 0, 0)
+}
+
+.no-submit{
+  background-color: rgb(172, 186, 188);
+  color: rgb(123, 123, 123)
 }
 
 $float-layout-timer: 300ms;
@@ -102,7 +111,7 @@ $float-layout-timer: 300ms;
   padding-top: 20px;
   padding-bottom: 20px;
   border-radius: 3mm;
-  font-size: 22px;
+  font-size: 35px;
   background-color: rgb(65, 193, 216);
 }
 .title{

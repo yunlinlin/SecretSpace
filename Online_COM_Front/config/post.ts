@@ -19,7 +19,6 @@ class Post extends Component{
                 header: header,
                 timeout: 120000,
                 success(res) {
-                    // console.log('res 响应拦截', res.statusCode);
                     if (res.statusCode === (403 || 401)) {
                         Taro.showModal({
                             title: '提示',
@@ -41,30 +40,16 @@ class Post extends Component{
                             })},
                         })
                     }else if(res.statusCode === 500){
-                        Taro.showToast({
-                            title: res.data,
-                            icon: 'error',
-                            duration: 2000,
-                        })
-                        // resolve(res);
+                        reject(res.data);
                     }else if(res.statusCode === 404){
-                        Taro.showToast({
-                            title: '网络请求错误',
-                            icon: 'error',
-                            duration: 2000,
-                        })
-                        // resolve(res);
+                        reject('服务器错误');
                     }else{
                         resolve(res);
                     }
                 },
                 fail : (error) => {
-                    reject(error);
-                    Taro.showToast({
-                        title: '网络错误',
-                        icon: 'error',
-                        duration: 2000,
-                    })
+                    console.log(error);
+                    reject('网络连接失败');
                 },
             })
         });

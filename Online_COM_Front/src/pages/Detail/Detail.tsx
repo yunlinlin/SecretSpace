@@ -1,7 +1,8 @@
 import { Component } from 'react'
 import { View, Image, Text } from '@tarojs/components'
-import { AtFab ,AtFloatLayout ,AtTextarea } from 'taro-ui'
+import { AtFab ,AtFloatLayout ,AtTextarea ,AtImagePicker } from 'taro-ui'
 import Taro, { getCurrentInstance } from '@tarojs/taro'
+import {uploadImages } from '../../Constant/upload'
 import './Detail.scss'
 
 type PageStateProps = {}
@@ -14,6 +15,7 @@ type PageState = {
   detail : any;
   imageList : Array<any>;
   comment : Array<any>;
+  files : any,
   OnComment : boolean;
   uploadComment : string;
   liked : boolean;
@@ -32,6 +34,7 @@ class Detail extends Component<IProps, PageState>{
       detail: {},
       imageList: [],
       comment: [],
+      files: [],
       OnComment: false,
       uploadComment: '',
       liked: false,
@@ -84,6 +87,11 @@ class Detail extends Component<IProps, PageState>{
           liked: res.data.liked,
           stored: res.data.stored,
         })
+      }else if(this.$instance.router?.params.url === 'feedback'){
+        this.setState({
+          detail: res.data.detail,
+          imageList: res.data.imageList,
+        })
       }else{
         this.setState({
           detail: res.data.detail,
@@ -94,6 +102,12 @@ class Detail extends Component<IProps, PageState>{
         })
       }
       console.log(this.state.detail);
+    }).catch((error) => {
+      Taro.showToast({
+        title: error,
+        icon: 'error',
+        duration: 2000,
+      })
     })
   }
 
@@ -218,10 +232,58 @@ class Detail extends Component<IProps, PageState>{
     })
   }
 
-  preview(index){
+  handOnImage(files){
+    this.setState({
+      files
+    })
+  }
+
+  handOnFeedback(){
+    let image = new Array<object>();
+    let uploads = uploadImages('feedback', this.state.files, this.state.detail.topicValue + this.state.detail.contentValue.length);
+    Promise.all(uploads).then((res) => {
+      res.map((item) => {
+        image.push(JSON.parse(item.data));
+      })
+      let imageInfo = JSON.stringify(image);
+      let promise = app.post.request(
+        this.$instance.router?.params.url + '/re-add',
+        'POST',
+        {
+          id: this.$instance.router?.params.id,
+          contentValue: this.state.uploadComment,
+          imageInfo: imageInfo,
+          sort: 'Q',
+        },
+      )
+      promise.then((value) => {
+        Taro.showToast({
+          title: value.data,
+          icon: 'success',
+          duration: 2000,
+        }).then(() => {
+          setTimeout(() => { 
+            this.setState({
+              OnComment: false,
+              uploadComment: '',
+              files: [],
+            })
+           }, 2000);
+        })
+      })
+    }).catch((error) => {
+      Taro.showToast({
+        title: error.message,
+        icon: 'error',
+        duration: 2000,
+      })
+    })
+  }
+
+  preview(imageList, currentUrl){
     let imageUrl = new Array<string>();
-    let currentUrl = app.config.file + this.state.imageList[index].localPath;
-    this.state.imageList.map((item) => { imageUrl.push(app.config.file + item.localPath) });
+    // let currentUrl = app.config.file + this.state.imageList[index].localPath;
+    imageList.map((item) => { imageUrl.push(app.config.file + item.localPath) });
     Taro.previewImage({
       current: currentUrl,
       urls: imageUrl,
@@ -265,7 +327,7 @@ class Detail extends Component<IProps, PageState>{
                       return(
                         <View key={index} className='image-item'>
                           <Image  className='image-item-i' 
-                            src={app.config.file + item.localPath} mode='aspectFill' onClick={this.preview.bind(this, index)}
+                            src={app.config.file + item.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList, app.config.file + item.localPath)}
                           />
                         </View>
                       )
@@ -306,9 +368,94 @@ class Detail extends Component<IProps, PageState>{
               {this.state.detail.created_at}&nbsp;&nbsp;&nbsp;{this.state.detail.nickname}
             </View>
           </View>
+          {
+            (this.state.detail.contentValue !== undefined && this.state.detail.contentValue !== null) ? this.state.detail.contentValue.map((item, index) => {
+              return(item.sort === 'Q' ? 
+                <View>
+                  <View className='feedback-time'>{item.created_at}</View>
+                  <View className='feedback-Q' key={index}>
+                    <Image className='avatar' src={app.config.file + '/Q.jpg'} />
+                    <View className='message-Q'>
+                      <Text>小Q</Text>
+                      <View className='content-Q'>
+                        <View className='triangle-Q'></View>
+                        {item.contentValue}
+                      </View>
+                      <View className='image-feedback'>
+                        {
+                          (this.state.imageList[index] !== undefined && this.state.imageList[index] !== null) ? this.state.imageList[index].map((item2, index2) => {
+                            return(
+                              <View key={index2} className='image-item'>
+                                <Image  className='image-item-i' 
+                                  src={app.config.file + item2.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList[index], app.config.file + item2.localPath)}
+                                />
+                              </View>
+                            ) 
+                          }) : <View />
+                        }
+                      </View>
+                    </View>
+                  </View>
+                </View> : 
+                <View>
+                  <View className='feedback-time'>{item.created_at}</View>
+                  <View className='feedback-A' key={index}>
+                    <View className='message-A'>
+                      <Text>小A</Text>
+                      <View className='content-A'>
+                        <View className='triangle-A'></View>
+                        {item.contentValue}
+                      </View>
+                      <View className='image-feedback'>
+                        {
+                          (this.state.imageList[index] !== undefined && this.state.imageList[index] !== null) ? this.state.imageList[index].map((item2, index2) => {
+                            return(
+                              <View key={index2} className='image-item'>
+                                <Image  className='image-item-i' 
+                                  src={app.config.file + item2.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList[index], app.config.file + item2.localPath)}
+                                />
+                              </View>
+                            ) 
+                          }) : <View />
+                        }
+                      </View>
+                    </View>
+                    <Image className='avatar' src={app.config.file + '/A.jpg'} />
+                  </View>
+                </View>
+                )
+              }) : <View />
+          }
+          {
+            (this.state.detail.uid !== undefined && this.state.detail.uid !== null && this.state.detail.uid === Taro.getStorageSync('UID')) ? 
+              <AtFab className='comment-fab' size='normal' onClick={() => this.ToComment()} >
+                <Text>追加反馈</Text>
+              </AtFab> : <View />
+          }
+          <AtFloatLayout isOpened={this.state.OnComment} title='追加反馈内容' >
+            <View className='title'>
+              <View className='title-dot'></View>
+              <Text className='act-title'>反馈说明</Text>
+            </View>
+            <AtTextarea value={this.state.uploadComment} 
+              onChange={(value) => this.WriteComment(value)} count={false}
+              maxLength={200} placeholder='反馈内容...'
+              height={300}
+            />
+            <View className='title'>
+              <View className='title-dot'></View>
+              <Text className='act-title'>附加图片</Text>
+            </View> 
+            <AtImagePicker 
+              files={this.state.files}
+              onChange={(files) => this.handOnImage(files)} onFail={() => {}}
+            />
+            <View className='comment-submit' onClick={() => this.handOnFeedback()}>
+              <Text>上传反馈</Text>
+            </View>                                                                                                                                                                                                                                                                                                                                                                                                                  
+          </AtFloatLayout>
         </View>
       )
-
     }else{
       return (
         <View>
@@ -330,7 +477,7 @@ class Detail extends Component<IProps, PageState>{
                       return(
                         <View key={index} className='image-item'>
                           <Image  className='image-item-i' 
-                            src={app.config.file + item.localPath} mode='aspectFill' onClick={this.preview.bind(this, index)}
+                            src={app.config.file + item.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList, app.config.file + item.localPath)}
                           />
                         </View>
                       )

@@ -19,13 +19,6 @@ type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 const app = Taro.getApp();
 
 class Door extends Component<IProps, PageState>{
-  constructor(){
-    super();
-    this.state = {
-      timer: '',
-    }
-  }
-
   componentDidMount(){
     let promise = app.post.request(
       '/users/isLogin',
@@ -33,9 +26,7 @@ class Door extends Component<IProps, PageState>{
     );
     promise.then((res) => {
       if(res.data === '登录成功'){
-        this.setState({
-          timer: setTimeout(() => Taro.switchTab({url: '../index/index'}), 3000),
-        })
+        Taro.switchTab({url: '../index/index'});
       }
     }).catch((error) => {
       console.log(error);
@@ -45,13 +36,11 @@ class Door extends Component<IProps, PageState>{
         duration: 2000,
       })
     })
-    clearTimeout(promise);
   }
 
   componentWillReceiveProps () { }
 
   componentWillUnmount () {
-    clearTimeout(this.state.timer);
   }
 
   componentDidShow () { }

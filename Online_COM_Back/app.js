@@ -13,7 +13,7 @@ let itemRouter = require('./routes/item');
 let feedbackRouter = require('./routes/feedback');
 let activityRouter = require('./routes/activity');
 let imageRouter = require('./routes/image');
-let orderRouter = require('./routes/order');
+let appointRouter = require('./routes/appoint');
 let uploadRouter = require('./routes/upload');
 
 let app = express();
@@ -36,7 +36,7 @@ app.use('/item', itemRouter);
 app.use('/feedback', feedbackRouter);
 app.use('/activity', activityRouter);
 app.use('/image', imageRouter);
-app.use('/order', orderRouter);
+app.use('/appoint', appointRouter);
 app.use('/upload', uploadRouter);
 
 // catch 404 and forward to error handler

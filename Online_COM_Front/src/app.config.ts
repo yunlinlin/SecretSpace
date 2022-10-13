@@ -7,7 +7,7 @@ export default defineAppConfig({
     'pages/regist/regist',
     'pages/index/index',
     'pages/activity/activity',
-    'pages/order/order',
+    'pages/appoint/appoint',
     'pages/user/user',
     'pages/job/job',
     'pages/upload/upload',
@@ -18,7 +18,7 @@ export default defineAppConfig({
     'pages/supplies/supplies',
     'pages/rent/rent',
     'pages/FeedBack/FeedBack',
-    'pages/orderTime/orderTime',
+    'pages/appointTime/appointTime',
     'pages/adminID/adminID',
     'pages/adminPage/adminPage',
     'pages/Detail/Detail',
@@ -50,7 +50,7 @@ export default defineAppConfig({
                 "text": "活动"
             },
             {
-              "pagePath": "pages/order/order",
+              "pagePath": "pages/appoint/appoint",
               "iconPath": "image/cart.png",
               "selectedIconPath": "image/cart_hover.png",
               "text": "预约"

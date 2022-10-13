@@ -153,4 +153,46 @@ feedbackRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
     })
 })
 
+feedbackRouter.post('/re-add', new AuthUse(1).w, async (req, res, next) => {
+    const {headers, body} = req;
+    const {id, contentValue, imageInfo, sort } = body;
+    const nowDate = getTime('date_time');
+    let imageSeries = JSON.parse(imageInfo);
+    let addSql = [];
+    let addSqlParams = [];
+    if(imageSeries.length > 0){
+        let imageNum = imageSeries.length;
+        let imageInsert = new Array(imageNum);
+        let imagePath = new Array(imageNum);
+        let showImageIndex = 0;
+        for(let i = 0;i < imageNum; i++){
+            imageInsert[i] = ['feedbackContent', imageSeries[i].reqPath, imageSeries[i].imageRank, imageSeries[i].width, imageSeries[i].height];
+            imagePath[i] = imageSeries[i].reqPath;
+            if(imageSeries[i].imageRank === 1){
+                showImageIndex = i;
+            }
+        }
+        addSql = [`INSERT INTO feedbackContent(contentValue, imageNum, feedback_id, sort, created_at) value('` + contentValue + `', ` + imageNum + `, ` + id + `, '` + sort + `', '` + nowDate + `')`,
+                  `SET @sort_Id = LAST_INSERT_ID()`,
+                  `INSERT INTO image(sortName, localPath, imageRank, width, height) value ?`,
+                  `UPDATE image set sortId = @sort_Id WHERE localPath IN (?)`];
+        addSqlParams = [[],
+                        [],
+                        [imageInsert],
+                        [imagePath]];
+    }else{
+        addSql = [`INSERT INTO feedbackContent(contentValue, imageNum, feedback_id, sort, created_at) value('` + contentValue + `', ` + 0 + `, ` + id + `, '` + sort + `', '` + nowDate + `')`];
+        addSqlParams = [[]];
+    }
+    let addPromise = pool.transcation(addSql, addSqlParams, res);
+    addPromise.then(() => {
+        res.status(200).json('上传成功');
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).json('上传失败');
+        let folder = imageSeries[i].reqPath;
+        deleteFolder(folder);
+    })
+})
+
 module.exports = feedbackRouter

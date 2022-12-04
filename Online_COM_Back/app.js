@@ -7,7 +7,6 @@ let logger = require('morgan');
 
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
-let animeRouter = require('./routes/anime');
 let loginRouter = require('./routes/login');
 let itemRouter = require('./routes/item');
 let feedbackRouter = require('./routes/feedback');
@@ -15,6 +14,7 @@ let activityRouter = require('./routes/activity');
 let imageRouter = require('./routes/image');
 let appointRouter = require('./routes/appoint');
 let uploadRouter = require('./routes/upload');
+let searchRouter = require('./routes/search');
 
 let app = express();
 
@@ -30,7 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/anime', animeRouter);
 app.use('/login', loginRouter);
 app.use('/item', itemRouter);
 app.use('/feedback', feedbackRouter);
@@ -38,6 +37,7 @@ app.use('/activity', activityRouter);
 app.use('/image', imageRouter);
 app.use('/appoint', appointRouter);
 app.use('/upload', uploadRouter);
+app.use('/search', searchRouter);
 
 // catch 404 and forward to error handler
 

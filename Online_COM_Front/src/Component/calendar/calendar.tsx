@@ -1,11 +1,12 @@
-import { PureComponent } from 'react'
-import { View, Text, Block} from '@tarojs/components'
-import { AtIcon } from 'taro-ui';
+import { Component } from 'react'
+import Taro from '@tarojs/taro'
+import { View, Text, Image } from '@tarojs/components'
 import './calendar.scss'
 
 type PageStateProps = {
-  isOpen : boolean;
-  dateUpdate : Function;
+  id : string; //唯一标识符
+  dateUpdate : Function; //日期变化后激发父组件渲染
+  heightUpdate : Function; //高度变化后激发父组件渲染
 }
 
 type PageDispatchProps = {
@@ -14,14 +15,11 @@ type PageDispatchProps = {
 type PageOwnProps = {}
 
 type PageState = {
-  // selected:string
-  calShow: boolean
   dateShow:boolean
   selectweeks:any
   year    :number
   month   :number
   date    :number
-  // date_select:number
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -32,44 +30,23 @@ type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 // }
 
 const nowDate = new Date();
+const app = Taro.getApp();
 
-class Calendar extends PureComponent<IProps, PageState>{
+class Calendar extends Component<IProps, PageState>{
     constructor(props) {
         super(props);
         this.state = {
-            // selected : '',
-            calShow: true, // 日历组件是否打开
-            dateShow: true, // 日期是否选择
+            dateShow: true, // 日历组件是否打开
             year: 2001, //选择的年份
             month: nowDate.getMonth(), //选择的月份
             selectweeks:([] as unknown) as any, //按一周七天排列日期
             date: nowDate.getDate(),    //选择的日期 （数字）
-            // date_select: 0 //判断所选日期是否在可公布范围内
         }
   }
 
   componentDidMount(){
-    this.setState({
-      calShow: true,
-    })
     this.getWeek(new Date());
   }
-  
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
-  }
-  
-  // shouldComponentUpdate(nextStates){
-  //   if(nextStates.dateUpdate.dateselect === this.state.date_select &&
-  //     nextStates.year === this.state.year &&
-  //     nextStates.month === this.state.month &&
-  //     nextStates.date === this.state.date){
-  //     return false;
-  //   }
-  //   else{
-  //     return true;
-  //   }
-  // }
 
   componentWillUnmount () {
    }
@@ -213,28 +190,16 @@ class Calendar extends PureComponent<IProps, PageState>{
   }
 
   packup() {
-
-    let self = this;
-    if (this.props.isOpen) {
-      let year = self.state.year + "-" + self.state.month + "-" + self.state.date
-      let _date = self.getDate(year, 0);
-      self.getWeek(_date);
-      return
+    if(this.state.dateShow){
+      this.setState({
+        dateShow: false,
+      })
+    }else{
+      this.setState({
+        dateShow: true,
+      })
     }
-    self.setState({
-      dateShow: false
-    }, () => {
-      setTimeout(() => {
-        self.setState({
-          calShow: false
-        }, () => {
-          let year = self.state.year + "-" + self.state.month + "-" + self.state.date
-          let _date = self.getDate(year, 0);
-          self.getWeek(_date);
-        //   self.triggerEvent('select', { ischeck: !self.data.calShow })
-        })
-      }, 300)
-    })
+    this.props.heightUpdate();
   }
 
   judgeDate(){
@@ -243,7 +208,7 @@ class Calendar extends PureComponent<IProps, PageState>{
     const month_current = Date_Current.getMonth()+1;
     const date_current = Date_Current.getDate();
     let date_select = 0; //判断所选日期是否在可公布范围内
-    if(this.state.year < year_current || this.state.month < month_current || (this.state.year === year_current && this.state.month === month_current && this.state.date < date_current))
+    if(this.state.year < year_current || (this.state.year === year_current && this.state.month < month_current) || (this.state.year === year_current && this.state.month === month_current && this.state.date < date_current))
       {
         date_select = -1;
       }
@@ -264,7 +229,6 @@ class Calendar extends PureComponent<IProps, PageState>{
       date_select = 15;
     }
     return date_select;
-    // this.props.dateUpdate(this.state.year, this.state.month, this.state.date, this.state.date_select);
   }
 
   backtoday() { this.getWeek(new Date()); }
@@ -276,69 +240,70 @@ class Calendar extends PureComponent<IProps, PageState>{
   
 
   render () {
-    const {calShow, dateShow, year, date, selectweeks, month} = this.state
-
-    if(calShow){
-
+    const {dateShow, year, date, selectweeks, month} = this.state;
+    if(dateShow){
       return (
-          <View className={[this.props.isOpen? '' : 'calendar-box', dateShow ? 'active' : ''].join('')}>
-              <View className={['calendar-wrapper', dateShow?'active':''].join('')}>
-                  <View className='calendar-panel'>
-                      <View className='iconfont' data-id='0' data-type='month' onClick={(e) => this.dataBefor(e)}>
-                          <AtIcon value='chevron-left'size='20'color='#35a4de'></AtIcon>
-                          {/* <Icon size='20' type='info'></Icon> */}
+        <View id={this.props.id} className='calendar-box' >
+            <View className={['calendar-wrapper', dateShow?'active':''].join('')}>
+                <View className='calendar-panel'>
+                  <View style='height: 60rpx; width: 60rpx; margin: 0 50rpx;display: flex; justify-content: center; align-items: center;' data-id='0' data-type='month' onClick={(e) => this.dataBefor(e)}  >
+                    <View className='iconLeft' />
+                  </View>
+                  <View className='calendar-panel-box'>
+                      <View>{year}年</View>
+                      <View>{month < 10 ? "0" + month : month}月</View>
+                  </View>
+                  <View style='height: 60rpx; width: 60rpx; margin: 0 50rpx;display: flex; justify-content: center; align-items: center;' data-id='1' data-type='month' onClick={(e) => this.dataBefor(e)}  >
+                    <View className='iconRight' />
+                  </View>
+                </View>
+                <View className='calendar-header'>
+                    <Text>日</Text>
+                    <Text>一</Text>
+                    <Text>二</Text>
+                    <Text>三</Text>
+                    <Text>四</Text>
+                    <Text>五</Text>
+                    <Text>六</Text>
+                </View>
+                <View className='calendar-body'>
+                {                        
+                  selectweeks.map((item1, index1) => {
+                    return(
+                      <View className='calender-body-date-week' key={index1}>
+                      {
+                          item1.map((item2,index2) => {
+                              return(
+                              <View className={['date', (item2.date === date.toString() && item2.month === month)?'date-current': '', item2.month === month? '': 'placeholder'].join(',')} data-week={index1} data-index={index2} data-ischeck={item2.month === month} onClick={(e) => this.selectDay(e)} key={index2} >
+                                  <Text className='datebox'>{item2.date}</Text>
+                              </View>
+                              )}
+                          )
+                      }
                       </View>
-                      <View className='calendar-panel-box'>
-                          <View>{year}年</View>
-                          <View>{month < 10 ? "0" + month : month}月</View>
-                      </View>
-                      <View className='iconfont flex-center' data-id='1' data-type='month' onClick={(e) => this.dataBefor(e)}>
-                          <AtIcon value='chevron-right'size='20'color='#35a4de'></AtIcon>
-                      </View>
-                  </View>
-                  <View className='calendar-header'>
-                      <Text>日</Text>
-                      <Text>一</Text>
-                      <Text>二</Text>
-                      <Text>三</Text>
-                      <Text>四</Text>
-                      <Text>五</Text>
-                      <Text>六</Text>
-                  </View>
-                  <View className='calendar-body'>
-                      <Block>
-                      {                        
-                          selectweeks.map((item1, index1) => {
-                                  return(
-                                      <View className='calender-body-date-week' key={index1}>
-                                          <Block>
-                                              {
-                                                  item1.map((item2,index2) => {
-                                                      // if()
-                                                      return(
-                                                      <View className={['date', (item2.date === date.toString() && item2.month === month)?'date-current': '', item2.month === month? '': 'placeholder'].join(',')} data-week={index1} data-index={index2} data-ischeck={item2.month === month} onClick={(e) => this.selectDay(e)} key={index2} >
-                                                          <Text className='datebox'>{item2.date}</Text>
-                                                          {/* <View className='data-circle'></View> */}
-                                                      </View>
-                                                      )}
-                                                  )
-                                              }
-
-                                          </Block>
-                                      </View>
-                                  )
-
-                              })
-                        }
-                      </Block>
-                  </View>
-                  <View className='packup' onClick={() => this.backtoday()}>
-                      回到今天
-                  </View>
-              </View>
-          </View>
-      )
+                    )
+                  })
                   }
+                </View>
+                <View className='option' >
+                    <View onClick={() => this.backtoday()} >回到今天</View>
+                    <View onClick={() => this.packup()} >收起日历</View>
+                </View>
+            </View>
+        </View>
+      )
+    }else{
+      return(
+        <View id={this.props.id} className='calendar-panel'>
+          <View className='calendar-panel-box'>
+              <View>{year}年</View>
+              <View>{month < 10 ? "0" + month : month}月</View>
+              <View>{date < 10 ? "0" + date : date}月</View>
+              <Image style='position: fixed; width: 50rpx; height: 50rpx; right: 60rpx' src={app.config.file + '/calendar.png'} onClick={() => this.packup()} />
+          </View>
+        </View>
+      )
+    }
   }
 }
 export { Calendar }

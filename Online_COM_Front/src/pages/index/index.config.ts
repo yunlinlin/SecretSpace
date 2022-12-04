@@ -1,4 +1,4 @@
 export default definePageConfig({
-  navigationBarBackgroundColor:"#fe5400",
+  navigationBarBackgroundColor: '#C864FF',
   navigationBarTitleText: '小破站'
 })

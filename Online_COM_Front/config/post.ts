@@ -17,7 +17,6 @@ class Post extends Component{
                 data: data,
                 method: method,
                 header: header,
-                timeout: 120000,
                 success(res) {
                     if (res.statusCode === (403 || 401)) {
                         Taro.showModal({
@@ -40,7 +39,7 @@ class Post extends Component{
                             })},
                         })
                     }else if(res.statusCode === 500){
-                        reject(res.data);
+                        reject(res);
                     }else if(res.statusCode === 404){
                         reject('服务器错误');
                     }else{

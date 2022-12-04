@@ -1,0 +1,26 @@
+.column_item_L, .column_item_R{
+    display: block;
+    width: 305rpx;
+    border-radius: 15rpx;
+    border-style: solid;
+    border-width: 3rpx;
+    border-color: rgb(27, 149, 210);
+    padding: 20rpx;
+    margin: auto;
+}
+
+.column_item_L{
+    margin-left: 20rpx;
+    margin-right: 10rpx;
+}
+
+.column_item_R{
+    margin-left: 10rpx;
+    margin-right: 20rpx;
+}
+
+.column_page{
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+}

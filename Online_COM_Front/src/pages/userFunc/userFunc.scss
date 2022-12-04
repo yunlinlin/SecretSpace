@@ -1,0 +1,30 @@
+.container{
+    width: 100%;
+    height: 100%;
+}
+//我的发布
+.tab{
+    width: 100%;
+    height: 80rpx;
+    display: flex;
+    justify-content: flex-start;
+}
+  
+.tabList, .tabList-active{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32rpx;
+}
+
+.tabList-active{
+    border-bottom: 5rpx solid rgb(50, 215, 70);
+}
+//我的日程
+.activity_list{
+    display: flex;
+    justify-content: center;
+    margin-top: 200rpx;
+    font-size: 32rpx;
+    color: rgb(123, 123, 123);
+  }

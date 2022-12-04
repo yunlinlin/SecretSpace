@@ -1,14 +1,9 @@
-@import '../../../node_modules/taro-ui/dist/style/variables/default.scss';
-@import '../../../node_modules/taro-ui/dist/style/mixins/index.scss';
 .container{
   padding: 20rpx;
   margin-left:10px;
   margin-right:10px;
 }
-.gap-1{
-    width:100%;
-    height:20rpx;
-}
+
 .submit, .no-submit{
   position: relative;
   top: 40px;
@@ -29,112 +24,150 @@
   color: rgb(123, 123, 123)
 }
 
-$float-layout-timer: 300ms;
-
-.at-float-layout {
-  &__container {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    min-height: $float-layout-height-min;
-    max-height: $float-layout-height-max;
-    background-color: $color-bg;
-    transform: translate3d(0, 100%, 0);
-    transition: transform $float-layout-timer cubic-bezier(0.36, 0.66, 0.04, 1);
-  }
-  .layout {
-    &-header {
-      position: relative;
-      padding: $spacing-v-md;
-      padding-left: 103px;
-      line-height: $line-height-zh;
-      background-color: $float-layout-header-bg-color;
-      margin: 0 auto;
-      text-align: center;
-    }
-    &-body {
-      font-size: $font-size-base;
-      padding: $spacing-v-md;
-      max-height: 828px;
-      min-height: 514px;
-      &__content {
-        padding-bottom: 40px;
-        max-height: 798px;
-        min-height: 484px;
-      }
-    }
-  }
+.float-layout {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
 }
+
+.order-title{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 80rpx;
+  border-bottom: 3rpx solid rgb(200, 200, 200);
+  line-height: 40rpx;
+  font-size: 30rpx;
+  background-color: rgb(255, 255, 255);
+}
+
+.symbol{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40rpx;
+  width: 40rpx;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
+  border-radius: 50%;
+  background-color: rgb(200, 200, 200);
+  color: rgb(255, 255, 255);
+}
+
+.close {
+  position: absolute;
+  right: 20rpx;
+  background: rgb(150, 150, 150);
+  color: rgb(255, 255, 255);
+  padding: 3rpx 3rpx;
+  text-align: center;
+  height: 40rpx;
+  width: 40rpx;
+  font-size: 32rpx;
+  line-height: 40rpx;
+}
+
+.close::before {
+  content: '\2717';
+}
+
 .order-body {
   display: flex;
   flex-wrap: wrap;
+  background-color: rgb(255, 255, 255);
 }
+
 .order-time {
   display: flex;
   width: 100%;
-  border-bottom: 1px #f5f5f5 solid;
+  border-bottom: 1px rgb(245, 245, 245) solid;
 }
+
 .order {
   position: relative;
   display: flex;
   float: left;
   width: 100%;
+  margin: 5rpx 5rpx;
   text-align: center;
-  color: #1c1c1c;
-  background: #fff;
-  line-height: 100rpx;
   justify-content: center;
+  color: rgb(28, 28, 28);
+  background: rgb(255, 255, 255);
 }
+
 .orderbox {
   display: flex;
   width: 60rpx;
   height: 60rpx;
-  margin: 10rpx;
+  padding: 5rpx 0;
   justify-content: center;
   align-items: center;
-}
-.order-current .orderbox{
-  padding: 5px 50px;
-  background: #35a4de;
-  color: #fff;
-}
-.order-holder {
-  color: #a4a4a4;
+  font-size: 28rpx;
+  line-height: 30rpx;
 }
 
-.order-submit{
-  position: relative;
-  top: 30px;
-  text-align: center;
-  padding-left: 40px;
-  padding-right: 40px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-radius: 3mm;
-  font-size: 35px;
-  background-color: rgb(65, 193, 216);
+.order-current{
+  background: rgb(53, 164, 222);
 }
+
+.order-current .orderbox{
+  color: rgb(255, 255, 255);
+}
+
+.order-holder {
+  color: rgb(164, 164, 164);
+}
+
 .title{
   position:relative;
   top: 5px;
   left: 0%;
   width: 100%;
-  height: 60px;
+  height: 60rpx;
   box-sizing: border-box;
 }
+
 .title-dot{
   position: absolute;
-  top: 15px;
-  left: 10px;
-  width: 15px;
-  height: 15px;
-  margin: 5px;
+  top: 15rpx;
+  left: 10rpx;
+  width: 15rpx;
+  height: 15rpx;
+  margin: 5rpx;
   background-color: rgb(62, 148, 219);
 }
+
 .act-title{
   position: absolute;
   top: 5px;
   left: 35px;
   height: auto;
   font-size: 32px;
+}
+
+.reason{
+  width: 690rpx;
+  padding: 10rpx 10rpx;
+  margin: 0 auto;
+  border-style: solid;
+  border-radius: 2mm;
+  border-width: 3rpx;
+  border-color: rgb(62, 148, 219);
+  font-size: 32rpx;
+}
+
+.order-submit{
+  position: relative;
+  top: 30rpx;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20rpx 40rpx;
+  border-radius: 3mm;
+  font-size: 35rpx;
+  background-color: rgb(65, 193, 216);
 }

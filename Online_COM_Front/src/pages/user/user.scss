@@ -1,17 +1,49 @@
-.container{
-    padding: 120rpx;
-    background: #fe5400;
+//用户页信息
+.user-page{
+    width: 100%;
+    background: rgb(255, 255, 255);
 }
-.userimg{
-    position:absolute;
-    width:100px;
-    height:100px;
-    left: 80px;
-    top: 40px;
+
+.user-msg{
+    display: flex;
+    align-items: center;
+    background: rgb(200, 100, 255);
 }
-.username{
-    position:absolute;
-    left: 220px;
-    top: 70px;
-    font-size: medium;
+
+.user-img{
+    width: 100rpx;
+    height:100rpx;
+    margin-top: 40rpx;
+    margin-bottom: 40rpx;
+    margin-left: 60rpx;
+    border-radius: 50%;
+}
+
+.user-name{
+    margin-left: 30rpx;
+    font-size: 30rpx;
+}
+
+.user-func{
+    margin-top: 150rpx;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+//用户页功能栏目
+.func-item{
+    padding-top: 25rpx;
+    padding-bottom: 25rpx;
+    padding-left: 10rpx;
+    width: 85%;
+    border-bottom: 3rpx solid rgb(220, 220, 220);
+}
+
+.func-item Image{
+    width: 40rpx;
+    height: 40rpx;
+    padding-right: 30rpx;
 }

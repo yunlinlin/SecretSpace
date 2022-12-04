@@ -9,26 +9,27 @@
 .main {
   display: flex;
   align-items: flex-start;
+  width: 100%;
 }
 
 .column {
   width: 50%;
 }
 
-.column_item {
-  width: 305rpx;
-  border-radius: 15rpx;
-  border-style: solid;
-  border-width: 3rpx;
-  border-color: rgb(27, 149, 210);
-  padding: 20rpx;
-  margin: 15rpx 15rpx;
-}
+// .column_item {
+//   width: 305rpx;
+//   border-radius: 15rpx;
+//   border-style: solid;
+//   border-width: 3rpx;
+//   border-color: rgb(27, 149, 210);
+//   padding: 20rpx 20rpx;
+//   margin: 15rpx 15rpx;
+// }
 
 .user_msg{
   width: 100%;
+  line-height: 60rpx;
   margin-bottom: 10rpx;
-  font-size: 35rpx;
 }
 
 .user_msg Image{
@@ -51,20 +52,20 @@
 }
 
 .column_pic {
-  // display: block;
   width: 305rpx;
 }
 
 .topic{
   padding-top: 15rpx;
+  line-height: 42rpx;
   font-size: 35rpx;
-  // background-color: aquamarine;
   font-weight: bolder;
 }
 
 .column-msg{
-  margin-top: 10rpx;
   display: flex;
+  margin-top: 10rpx;
+  line-height: 30rpx;
   align-items: center;
   justify-content: flex-end;
 }

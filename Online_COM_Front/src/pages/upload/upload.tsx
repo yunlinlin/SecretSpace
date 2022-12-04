@@ -293,7 +293,7 @@ class Upload extends Component{
           </View>
           <Textarea className='content' value={this.state.topicValue} 
             onInput={(value) => this.handOnTopic(value)} disableDefaultPadding
-            autoHeight maxlength={30} placeholder='您的活动主题是...(建议15字以内)'
+            autoHeight maxlength={30} placeholder='您的主题是...(建议15字以内)'
           />
           <View className='title'>
             <View className='title-dot'></View>

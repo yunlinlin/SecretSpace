@@ -26,19 +26,26 @@ type PageDispatchProps = {
 
 type PageOwnProps = {}
 
-type PageState = {}
+type PageState = {
+  current : number;
+}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Home {
-  state: PageState;
-  props: IProps;
-}
+// interface Home {
+//   state: PageState;
+//   props: IProps;
+// }
 
-class Home extends Component{
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+class Home extends Component<IProps, PageState>{
+  constructor(props){
+    super(props);
+    this.state = {
+      current: 0,
+    }
   }
+
+  componentDidMount() { }
 
   componentWillUnmount () { }
 
@@ -99,23 +106,23 @@ class Home extends Component{
   }
 
   handOnFind(){
-    Taro.request({
-      url: 'http://localhost:3000/anime/list/' + 1,
-      method: 'GET',
-      success: (res) => {
-        console.log('查找结果', res.data)
-      }
+    Taro.navigateTo({
+      url: '/pages/search/search',
+    })
+  }
+
+  classSelect(value){
+    this.setState({
+      current: value
     })
   }
 
   render () {
+    const tabList = ['精选活动', '活动回顾'];
     return (
       <View className='index'>
         <View className='header'>
-            <Image src={require('../../image/tao.png')} />
-            <Input type='text' onClick={() => this.handOnFind()}></Input>
-            <View className='search'>
-                <Image src={require('../../image/search.png')} />
+            <View className='search' onClick={() => this.handOnFind()} >
                 <Text>搜索</Text>
             </View>
         </View>
@@ -145,15 +152,24 @@ class Home extends Component{
               }        
         </View>
         <View className='gap-1'></View >
-        <View className='tb-toppest'>
+        {/* <View className='tb-toppest'>
           <Image src='http://gw.alicdn.com/tps/i3/TB12wM3HXXXXXbxapXXdFmWHFXX-207-60.png?imgtag=avatar' ></Image>
           <View className='btn'>双11</View>
           <View className='content'>你家跑步机有那么安静吗?</View>
-        </View >
+        </View > */}
         <View className='gap-2'></View >
-        <View className='banner-3' onClick={() => this.handOnUpdate()}>
-          <Image className='title' src={require('../../image/banner3_title.png')} ></Image>
-        </View >
+        <View className='tab' id='tab'>
+          {
+            tabList.map((item, index) => {
+              return(
+                <View className={this.state.current === index ? 'tabList-active' : 'tabList'} style={`width: ${750 / tabList.length}rpx`} key={index} onClick={() => this.classSelect(index)}>
+                  <Text>{item}</Text>
+                </View>
+              )
+              
+            })
+          }
+        </View>
       </View>
     )
   }

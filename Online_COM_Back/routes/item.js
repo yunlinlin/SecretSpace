@@ -44,15 +44,15 @@ itemRouter.post('/add', new AuthUse(1).w, async (req, res, next) => {
 })
 
 itemRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
-    const { timeRange, classify } = req.query;
+    const { timeRange, classify, itemNum, startIndex } = req.query;
     let select = '';
     let selectParams = [];
     if(JSON.parse(timeRange) === 0){
-        select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at FROM item INNER JOIN users ON item.uid = users.uid WHERE item.classify = ? '
-        selectParams = [classify];  
+        select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at FROM item INNER JOIN users ON item.uid = users.uid WHERE item.classify = ? ORDER BY created_at DESC LIMIT ?, ?'
+        selectParams = [classify, JSON.parse(startIndex), JSON.parse(itemNum)];  
     }else{
-        select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at FROM item INNER JOIN users ON item.uid = users.uid WHERE item.classify = ? AND DATE_SUB(CURDATE(), INTERVAL ? DAY) <= date(item.created_at) '
-        selectParams = [classify, JSON.parse(timeRange)];
+        select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at FROM item INNER JOIN users ON item.uid = users.uid WHERE item.classify = ? AND DATE_SUB(CURDATE(), INTERVAL ? DAY) <= date(item.created_at) ORDER BY created_at DESC LIMIT ?, ?'
+        selectParams = [classify, JSON.parse(timeRange), JSON.parse(startIndex), JSON.parse(itemNum)];
     }
     pool.query(select, selectParams, function(err, result){
         if(err){
@@ -64,11 +64,11 @@ itemRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
                 let listPromise = [];
                 for(let i = 0; i < result.length; i++){
                     listPromise.push(new Promise((resolve, reject) =>{
-                        const showImage = 'SELECT * FROM image WHERE sortName = ? AND sortId = ? AND imageRank = 1';
+                        const showImage = 'SELECT localPath, width, height FROM image WHERE sortName = ? AND sortId = ? AND imageRank = 1 LIMIT 1';
                         const Params = [ classify, result[i].id ];
                         pool.query(showImage, Params, function(error, imageResult){
                             if(error){
-                                console.log('获取首页图片失败');
+                                console.log('获取封面图片失败');
                                 reject(error);
                             }
                             else{
@@ -81,7 +81,7 @@ itemRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
                 Promise.all(listPromise).then((result) => {
                     res.json(result);
                 }).catch((error) => {
-                    res.status(500).json('获取封面失败');
+                    res.status(500).json('获取简介信息失败');
                     console.log(error);
                 })
             }else{
@@ -321,5 +321,46 @@ itemRouter.post('/commentLike', new AuthUse(1).w, async (req, res, next) => {
         })
     }
 })
+
+itemRouter.get('/user_upload', new AuthUse(1).w, function(req, res, next) {
+    const { uid, itemNum, startIndex } = req.query;
+    const select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at, item.classify FROM item INNER JOIN users ON item.uid = users.uid WHERE item.uid = ? ORDER BY item.created_at DESC LIMIT ?, ?';
+    const selectParams = [JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];
+    pool.query(select, selectParams, function(err, result){
+        if(err){
+            res.status(500).json('获取数据失败');
+            console.log(err, '获取活动信息数据失败');
+        }
+        else{
+            if(result.length > 0){
+                let listPromise = [];
+                for(let i = 0; i < result.length; i++){
+                    listPromise.push(new Promise((resolve, reject) =>{
+                        const showImage = 'SELECT * FROM image WHERE sortId = ? AND sortName = ? AND imageRank = 1';
+                        const Params = [result[i].id, result[i].classify];
+                        pool.query(showImage, Params, function(error, imageResult){
+                            if(error){
+                                console.log('获取首页图片失败');
+                                reject(error);
+                            }
+                            else{
+                                result[i].image = imageResult;
+                                resolve(result[i]);
+                            }
+                        })
+                    }))
+                }
+                Promise.all(listPromise).then((result) => {
+                    res.json(result);
+                }).catch((error) => {
+                    res.status(500).json('获取封面失败');
+                    console.log(error);
+                })
+            }else{
+                res.json(result);
+            }
+        }
+    })
+});
 
 module.exports = itemRouter

@@ -43,10 +43,6 @@ class Order extends Component{
       // }
     );
     promise.then((value) => {
-      this.setState({
-        list: value.data,
-      })
-      console.log(this.state.list);
     })
   }
 

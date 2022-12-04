@@ -16,6 +16,8 @@ type PageOwnProps = {}
 type PageState = {
   uid : number;
   password : string;
+  timer1 : any;
+  timer2 : any;
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -33,6 +35,8 @@ class Login extends Component{
     this.state = {
       uid: 0,
       password: '',
+      timer1: '',
+      timer2: '',
     }
   }
 
@@ -42,11 +46,17 @@ class Login extends Component{
     console.log(this.props, nextProps)
   }
 
-  componentWillUnmount () { }
+  componentWillUnmount () {
+    clearTimeout(this.state.timer1);
+    clearTimeout(this.state.timer2);
+  }
 
   componentDidShow () { }
 
-  componentDidHide () { }
+  componentDidHide () {
+    clearTimeout(this.state.timer1);
+    clearTimeout(this.state.timer2);
+  }
 
   handOnID(e){
     this.setState({
@@ -61,36 +71,40 @@ class Login extends Component{
   }
 
   handOnUserInfo(){
-    setTimeout(() => {
-      Taro.request({
-        url: app.config.api + '/login/loginCheck',
-        method: 'POST',
-        data: {
-          uid: this.state.uid,
-          password: this.state.password,
-        },
-        success: (res) => {
-          if(res.data.message === '登录成功'){
-            Taro.setStorageSync('USER', res.data.token);
-            Taro.setStorageSync('UID', res.data.uid);
-            Taro.setStorageSync('LEVEL', res.data.level);
-            Taro.setStorageSync('NICKNAME', res.data.nickName);
-            Taro.showToast({
-              title: res.data.message,
-              icon: 'success',
-              duration: 2000,
-            })
-            setTimeout(() => Taro.switchTab({url: '../index/index'}), 2000) 
-          }else{
-            Taro.showToast({
-              title:res.data.message,
-              icon: 'error',
-              duration: 2000,
-            })
+    this.setState({
+      timer1: setTimeout(() => {
+        Taro.request({
+          url: app.config.api + '/login/loginCheck',
+          method: 'POST',
+          data: {
+            uid: this.state.uid,
+            password: this.state.password,
+          },
+          success: (res) => {
+            if(res.data.message === '登录成功'){
+              Taro.setStorageSync('USER', res.data.token);
+              Taro.setStorageSync('UID', res.data.uid);
+              Taro.setStorageSync('LEVEL', res.data.level);
+              Taro.setStorageSync('NICKNAME', res.data.nickName);
+              Taro.showToast({
+                title: res.data.message,
+                icon: 'success',
+                duration: 2000,
+              })
+              this.setState({
+                timer2: setTimeout(() => Taro.switchTab({url: '../index/index'}), 2100),
+              })
+            }else{
+              Taro.showToast({
+                title:res.data.message,
+                icon: 'error',
+                duration: 2000,
+              })
+            }
           }
-        }
-      })
-    }, 100)
+        })
+      }, 100)
+    })
   }
 
   toRegist(){

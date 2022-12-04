@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import Taro from '@tarojs/taro'
 import Post from '../config/post'
 import './app.scss'
 
@@ -6,7 +7,10 @@ const post = new Post('');
 
 class App extends Component{
 
-  componentDidMount () {}
+  componentDidMount () {
+    let windowHeight = Taro.getSystemInfoSync().windowHeight;
+    Taro.setStorageSync('windowHeight', windowHeight);
+  }
 
   componentDidShow () {}
 

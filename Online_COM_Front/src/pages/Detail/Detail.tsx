@@ -2,7 +2,7 @@ import { Component } from 'react'
 import { View, Image, Text } from '@tarojs/components'
 import { AtFab ,AtFloatLayout ,AtTextarea ,AtImagePicker } from 'taro-ui'
 import Taro, { getCurrentInstance } from '@tarojs/taro'
-import {uploadImages } from '../../Constant/upload'
+import { uploadImages } from '../../Constant/upload'
 import './Detail.scss'
 
 type PageStateProps = {}
@@ -43,7 +43,7 @@ class Detail extends Component<IProps, PageState>{
   }
 
   componentDidMount(){
-    this.loadList();
+    this.loadDetail();
   }
 
   componentWillReceiveProps (nextProps) {
@@ -70,7 +70,7 @@ class Detail extends Component<IProps, PageState>{
 
   componentDidHide () { }
 
-  loadList(){
+  loadDetail(){
     let promise = app.post.request(
       this.$instance.router?.params.url + '/detail',
       'GET',
@@ -101,7 +101,6 @@ class Detail extends Component<IProps, PageState>{
           stored: res.data.stored,
         })
       }
-      console.log(this.state.detail);
     }).catch((error) => {
       Taro.showToast({
         title: error,
@@ -144,7 +143,7 @@ class Detail extends Component<IProps, PageState>{
         OnComment: false,
         uploadComment: '',
         });
-        this.loadList();
+        this.loadDetail();
       }, 1000)
     }).catch((error) => {
       console.log(error);     
@@ -181,26 +180,41 @@ class Detail extends Component<IProps, PageState>{
   }
 
   itemStore(){
-    let likePromise = app.post.request(
-      this.$instance.router?.params.url + '/store',
-      'POST',
-      {
+    let data = {};
+    if(this.$instance.router?.params.class === 'activity'){
+      data = {
+        item_id: JSON.parse(this.$instance.router?.params.id ? this.$instance.router?.params.id : '0'),
+        year: this.state.detail.year,
+        month: this.state.detail.month,
+        date: this.state.detail.date,
+        classify: this.$instance.router?.params.class,
+        option: this.state.stored === false ? 'add' : 'delete',
+      }
+    }else{
+      data = {
         item_id: JSON.parse(this.$instance.router?.params.id ? this.$instance.router?.params.id : '0'),
         classify: this.$instance.router?.params.class,
         option: this.state.stored === false ? 'add' : 'delete',
       }
+    }
+    let likePromise = app.post.request(
+      this.$instance.router?.params.url + '/store',
+      'POST',
+      data
     ).catch((error) => {
       console.log(error);     
       Taro.showToast({
-        title: '收藏失败',
+        title: '操作失败',
         icon: 'error',
         duration: 2000
       })
     })
-    likePromise.then(() => {
-      this.setState({
-        stored: this.state.stored === false ? true : false,
-      })
+    likePromise.then((res) => {
+      if(res?.statusCode === 200){
+        this.setState({
+          stored: this.state.stored === false ? true : false,
+        })
+      }
     })
   }
 
@@ -339,18 +353,17 @@ class Detail extends Component<IProps, PageState>{
           </View>
           <Image className='divider' mode='widthFix' src={app.config.file + '/divider.png'} />
           <View className='option'>
-            <View className='option-like'>
+            <View className='option-like' onClick={() => this.itemLike()} >
               {
-                this.state.liked === true ? <Image className='image-like' src={app.config.file + '/item_liked.png'} onClick={() => this.itemLike()} /> : 
-                <Image className='image-like' src={app.config.file + '/item_unlike.png'} onClick={() => this.itemLike()} />
+                this.state.liked === true ? <Image className='image-like' src={app.config.file + '/item_liked.png'} /> : 
+                <Image className='image-like' src={app.config.file + '/item_unlike.png'} />
               }
               <Text>喜欢</Text>
             </View>
-            <View className='option-store'>
+            <View className='option-store' onClick={() => this.itemStore()} >
               {
-                this.state.stored === true ? <Image className='image-store' src={app.config.file + '/stored.png'} onClick={() => this.itemStore()} /> : 
-                <Image className='image-store' src={app.config.file + '/unstore.png'} onClick={() => this.itemStore()} />
-                
+                this.state.stored === true ? <Image className='image-store' src={app.config.file + '/stored.png'} /> : 
+                <Image className='image-store' src={app.config.file + '/unstore.png'} />
               }
               <Text>添加至日程表</Text>
             </View>
@@ -381,20 +394,20 @@ class Detail extends Component<IProps, PageState>{
                         <View className='triangle-Q'></View>
                         {item.contentValue}
                       </View>
-                      <View className='image-feedback'>
-                        {
-                          (this.state.imageList[index] !== undefined && this.state.imageList[index] !== null) ? this.state.imageList[index].map((item2, index2) => {
-                            return(
-                              <View key={index2} className='image-item'>
-                                <Image  className='image-item-i' 
-                                  src={app.config.file + item2.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList[index], app.config.file + item2.localPath)}
-                                />
-                              </View>
-                            ) 
-                          }) : <View />
-                        }
-                      </View>
                     </View>
+                  </View>
+                  <View className='image-feedback'>
+                  {
+                    (this.state.imageList[index] !== undefined && this.state.imageList[index] !== null) ? this.state.imageList[index].map((item2, index2) => {
+                      return(
+                        <View key={index2} className='image-item'>
+                          <Image  className='image-item-i' 
+                            src={app.config.file + item2.localPath} mode='aspectFill' onClick={this.preview.bind(this, this.state.imageList[index], app.config.file + item2.localPath)}
+                          />
+                        </View>
+                      ) 
+                    }) : <View />
+                  }
                   </View>
                 </View> : 
                 <View>

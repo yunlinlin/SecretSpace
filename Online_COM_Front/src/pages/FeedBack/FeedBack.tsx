@@ -15,28 +15,48 @@ type PageOwnProps = {}
 
 type PageState = {
   timeRange : number,
+  scrollHeight : number,
+  timer : any,
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface FeedBack{
-  props: IProps;
-  state: PageState;
-}
+// interface FeedBack{
+//   props: IProps;
+//   state: PageState;
+// }
 
-class FeedBack extends Component{
+class FeedBack extends Component<IProps, PageState>{
   constructor(props){
     super(props)
     this.state = {
       timeRange: 3,
+      scrollHeight: 0,
+      timer: '',
     }
   }
 
-  componentDidMount(){ }
+  componentDidMount(){
+    this.setState({
+      timer: setTimeout(() => {
+      let query = Taro.createSelectorQuery();
+      query.select('#range').boundingClientRect();
+      query.exec((res) => {
+        let rangeHeight = res[0].height;
+        let scrollHeight = Taro.getStorageSync('windowHeight') - rangeHeight;
+        this.setState({
+            scrollHeight: scrollHeight,
+        });
+      });
+      }, 200)
+    })
+  }
 
   componentWillReceiveProps () { }
 
-  componentWillUnmount () { }
+  componentWillUnmount () {
+    clearTimeout(this.state.timer)
+  }
 
   componentDidShow () { }
 
@@ -55,13 +75,13 @@ class FeedBack extends Component{
   render () {
     return (
       <View>
-          <View className='time-range' >
+          <View className='time-range' id='range' >
             <Text className={['time-rangeTag', this.state.timeRange === 3 ? 'active' : 'inactive'].join(' ')} onClick={() => this.timeRange(3)} >近三天</Text>
             <Text className={['time-rangeTag', this.state.timeRange === 7 ? 'active' : 'inactive'].join(' ')} onClick={() => this.timeRange(7)} >近一周</Text>
             <Text className={['time-rangeTag', this.state.timeRange === 30 ? 'active' : 'inactive'].join(' ')} onClick={() => this.timeRange(30)} >近一个月</Text>
             <Text className={['time-rangeTag', this.state.timeRange === 0 ? 'active' : 'inactive'].join(' ')} onClick={() => this.timeRange(0)} >全部</Text>
           </View>
-          <Falls url={'/feedback/list?timeRange=' + this.state.timeRange} class='feedback' />
+          <Falls url={'/feedback/list?timeRange=' + this.state.timeRange} class='feedback' scrollViewHeight={this.state.scrollHeight} />
           <AtFab className='issue-fab' size='normal' onClick={() => this.toUploadIssue()} >
             <Text>问题反馈</Text>
           </AtFab>

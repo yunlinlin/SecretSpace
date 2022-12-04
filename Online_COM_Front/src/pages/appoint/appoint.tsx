@@ -31,9 +31,7 @@ class Order extends Component<IProps, PageState>{
     }
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
-  }
+  componentWillReceiveProps () { }
 
   componentWillUnmount () { }
 

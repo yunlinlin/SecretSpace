@@ -9,8 +9,9 @@ let activityRouter = express.Router();
 activityRouter.post('/add', new AuthUse(1).w, async (req, res, next) => {
     const {headers, body} = req;
     const {topicValue, timeValue, placeValue, contentValue, dateSelect, imageInfo } = body;
+    let nowDay = new Date();
     let imageSeries = JSON.parse(imageInfo);
-    let date = dateSelect.split('-');
+    let date = [nowDay.getFullYear(), nowDay.getMonth(), nowDay.getDate()];
     let nowDate = getTime('date_time');
     let addSql = [];
     let addSqlParams = [];
@@ -46,12 +47,9 @@ activityRouter.post('/add', new AuthUse(1).w, async (req, res, next) => {
 })
 
 activityRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
-    const { year, month, date, classify } = req.query;
-    y = year;
-    m = JSON.parse(month) < 10 ? '0' + month : month;
-    d = JSON.parse(date) < 10 ? '0' + date : date;
-    const select = ' SELECT users.nickname, users.avatar, act.uid, act.topicValue, act.created_at, act.id, act.likeCount, act.storeCount FROM activity act INNER JOIN users ON act.uid = users.uid WHERE act.year = ? AND act.month = ? AND act.date = ? '
-    const selectParams = [y, m, d];
+    const { year, month, date, classify, itemNum, startIndex } = req.query;
+    const select = ' SELECT users.nickname, users.avatar, act.uid, act.topicValue, act.created_at, act.id, act.likeCount, act.storeCount FROM activity act INNER JOIN users ON act.uid = users.uid WHERE act.year = ? AND act.month = ? AND act.date = ? ORDER BY created_at DESC LIMIT ?, ? '
+    const selectParams = [JSON.parse(year), JSON.parse(month), JSON.parse(date), JSON.parse(startIndex), JSON.parse(itemNum)];
     pool.query(select, selectParams, function(err, result){
         if(err){
             res.status(500).json('获取数据失败');
@@ -118,7 +116,7 @@ activityRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
                 extraParams.push([]);
             }
             if(detailResult[0].storeCount > 0){
-                extraSelect.push('SELECT 1 FROM storeRecord WHERE sort = ? AND itemId = ? LIMIT 1');
+                extraSelect.push('SELECT 1 FROM schedule WHERE sort = ? AND itemId = ? LIMIT 1');
                 extraParams.push(['activity', JSON.parse(id)]);
             }else{
                 extraSelect.push('');
@@ -180,13 +178,13 @@ activityRouter.post('/like', new AuthUse(1).w, async (req, res, next) => {
 
 activityRouter.post('/store', new AuthUse(1).w, async (req, res, next) => {
     const { headers, body } = req;
-    const { item_id, classify, option } = body;
+    const { item_id, year, month, date, classify, option } = body;
     let nowTime = getTime('date_time');
     if(option === 'add'){
-        const insert = [`INSERT INTO storeRecord(uid, itemId, sort, created_at) VALUE(?, ?, ?, ?)`,
+        const insert = [`INSERT INTO schedule(uid, itemId, year, month, date, sort, created_at) VALUE(?, ?, ?, ?, ?, ?, ?)`,
                         `SELECT @storeCount := storeCount FROM activity WHERE id = ? FOR UPDATE`,
                         `UPDATE activity SET storeCount = @storeCount + 1 WHERE id = ?`];
-        const insertParams = [[headers.uid, JSON.parse(item_id), classify, nowTime],
+        const insertParams = [[headers.uid, JSON.parse(item_id), JSON.parse(year), JSON.parse(month), JSON.parse(date), classify, nowTime],
                               [JSON.parse(item_id)],
                               [JSON.parse(item_id)]];
         let addLikePromise = pool.transcation(insert, insertParams);
@@ -197,7 +195,7 @@ activityRouter.post('/store', new AuthUse(1).w, async (req, res, next) => {
             res.status(500).json('收藏失败');
         })
     }else{
-        const deleteLike = [`DELETE FROM storeRecord WHERE uid = ? AND itemId = ? AND sort = ?`,
+        const deleteLike = [`DELETE FROM schedule WHERE uid = ? AND itemId = ? AND sort = ?`,
                             `SELECT @storeCount := storeCount FROM activity WHERE id = ? FOR UPDATE`,
                             `UPDATE activity SET storeCount = @storeCount - 1 WHERE id = ?`];
         const deleteParams = [[headers.uid, JSON.parse(item_id), classify], 
@@ -212,5 +210,86 @@ activityRouter.post('/store', new AuthUse(1).w, async (req, res, next) => {
         })
     }
 })
+
+activityRouter.get('/user_upload', new AuthUse(1).w, function(req, res, next) {
+    const { uid, itemNum, startIndex } = req.query;
+    const select = 'SELECT users.nickname, users.avatar, act.uid, act.topicValue, act.created_at, act.id, act.likeCount, act.storeCount FROM activity act INNER JOIN users ON act.uid = users.uid WHERE act.uid = ? ORDER BY act.created_at DESC LIMIT ?, ?'
+    const selectParams = [JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];
+    pool.query(select, selectParams, function(err, result){
+        if(err){
+            res.status(500).json('获取数据失败');
+            console.log(err, '获取活动信息数据失败');
+        }
+        else{
+            if(result.length > 0){
+                let listPromise = [];
+                for(let i = 0; i < result.length; i++){
+                    listPromise.push(new Promise((resolve, reject) =>{
+                        const showImage = 'SELECT * FROM image WHERE sortId = ? AND sortName = ? AND imageRank = 1';
+                        const Params = [result[i].id, 'activity'];
+                        pool.query(showImage, Params, function(error, imageResult){
+                            if(error){
+                                console.log('获取首页图片失败');
+                                reject(error);
+                            }
+                            else{
+                                result[i].image = imageResult;
+                                resolve(result[i]);
+                            }
+                        })
+                    }))
+                }
+                Promise.all(listPromise).then((result) => {
+                    res.json(result);
+                }).catch((error) => {
+                    res.status(500).json('获取封面失败');
+                    console.log(error);
+                })
+            }else{
+                res.json(result);
+            }
+        }
+    })
+});
+
+activityRouter.get('/user_attend', new AuthUse(1).w, function(req, res, next) {
+    const { year, month, date, uid, itemNum, startIndex } = req.query;
+    const attend = 'SELECT itemId FROM schedule WHERE year = ? AND month = ? AND date = ? AND uid = ? ORDER BY created_at DESC LIMIT ?, ? ';
+    const attendParams = [JSON.parse(year), JSON.parse(month), JSON.parse(date), JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];
+    pool.query(attend, attendParams, function(err, result){
+        if(err){
+            res.status(500).json('获取数据失败');
+            console.log(err, '获取活动信息数据失败');
+        }
+        else{
+            if(result.length > 0){
+                let listPromise = [];
+                for(let i = 0; i < result.length; i++){
+                    listPromise.push(new Promise((resolve, reject) =>{
+                        const select = [`SELECT users.nickname, users.avatar, act.uid, act.topicValue, act.created_at, act.id, act.likeCount, act.storeCount FROM activity act INNER JOIN users ON act.uid = users.uid WHERE act.id = ?`,
+                                        `SELECT * FROM image WHERE sortId = ? AND sortName = ? AND imageRank = 1`];
+                        const selectParams = [[result[i].itemId],
+                                              [result[i].itemId, 'activity']];
+                        let attendPromise = pool.transcation(select, selectParams);
+                        attendPromise.then((res) => {
+                            res[0][0].image = res[1];
+                            resolve(res[0][0]);
+                        }).catch((error) => {
+                            reject(error);
+                        })
+                    }))
+                }
+                Promise.all(listPromise).then((result) => {
+                    res.json(result);
+                }).catch((error) => {
+                    res.status(500).json('获取首页信息失败');
+                    console.log(error);
+                })
+            }else{
+                res.json(result);
+            }
+        }
+    })
+});
 
 module.exports = activityRouter

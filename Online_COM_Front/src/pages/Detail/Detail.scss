@@ -68,11 +68,10 @@
 
 .image-item{
   width: 30%;
-  height: 240rpx;
+  height: 225rpx;
   position: relative;
-  margin-right: 2%;
-  margin-bottom: 2%;
-  border: 1px solid #c0ccda;
+  margin: 10rpx 1%;
+  border: 1rpx solid rgb(194, 204, 218);
 }
 
 .image-item-i{
@@ -87,6 +86,7 @@
 
 /******************** 评论区 ********************/
 .comment{
+  flex: 1;
   padding-bottom: 300rpx;
   padding-left: 20rpx;
   padding-right: 20rpx;
@@ -196,34 +196,36 @@
   height: 100rpx;
   width: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 .option-like Text{
   font-size: 28rpx;
+  color:rgb(0, 0, 0)
 }
 
 .option-store{
   height: 100rpx;
   width: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 .option-store Text{
   font-size: 28rpx;
+  color:rgb(0, 0, 0);
 }
 
 .image-like{
+  margin-right: 20rpx;
   width: 60rpx;
   height: 60rpx;
 }
 
 .image-store{
+  margin-right: 20rpx;
   width: 50rpx;
   height: 50rpx;
 }
@@ -273,7 +275,6 @@
   position: relative;
   max-width: 500rpx;
   padding: 10rpx 20rpx;
-  border: 2rpx solid #ccc;
   margin-top: 5rpx;
   border-radius: 10rpx;
   word-break: break-all;
@@ -284,11 +285,13 @@
 
 .content-Q{
   margin-left: 10rpx;
+  border: 2rpx solid rgb(25, 160, 200);
   background-color: rgb(25, 160, 200);
 }
 
 .content-A{
   margin-right: 10rpx;
+  border: 2rpx solid rgb(200, 110, 25);
   background-color: rgb(200, 110, 25);
 }
 
@@ -311,7 +314,11 @@
 }
 
 .image-feedback{
-  margin: 5rpx 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-left: 1%;
+  margin-right: 2%;
 }
 
 /********************追加反馈****************/

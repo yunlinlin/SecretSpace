@@ -2,7 +2,7 @@ import { Component } from 'react'
 import { View, Text, Input } from '@tarojs/components'
 import { AtTabs, AtTabsPane } from 'taro-ui'
 import Taro from '@tarojs/taro'
-import List  from '../../Component/List/List'
+import { List } from '../../Component/List/List'
 import './adminPage.scss'
 
 type PageStateProps = {

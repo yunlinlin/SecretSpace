@@ -1,8 +1,6 @@
 .container{
   position: relative;
-  margin-left: 10rpx;
-  margin-right: 10rpx;
-  margin-bottom: 20rpx;
+  margin: 0 10rpx;
 }
 
 .title{
@@ -13,7 +11,6 @@
   height: 60rpx;
   box-sizing: border-box;
 }
-
 .title-dot{
   position: absolute;
   top: 15rpx;
@@ -23,22 +20,6 @@
   margin: 5rpx;
   background-color: rgb(62, 148, 219);
 }
-
-.selector{
-  margin: 0 auto;
-  width: 95%;
-  padding: 20rpx 10rpx;
-  border: 2rpx solid rgb(62, 148, 219);
-  border-radius: 2mm;
-}
-
-.selector-text{
-  display: flex;
-  justify-content: space-between;
-  line-height: 35rpx;
-  font-size: 32rpx;
-}
-
 .act-title{
   position: absolute;
   top: 5rpx;
@@ -46,17 +27,15 @@
   height: auto;
   font-size: 32rpx;
 }
-
 .content{
   width: 690rpx;
-  padding: 10rpx 10rpx;
+  padding: 20rpx 10rpx;
   border-style: solid;
   border-radius: 2mm;
   border-width: 3rpx;
   border-color: rgb(62, 148, 219);
   font-size: 32rpx;
 }
-
 .content-flex{
   margin: 5rpx 5rpx;
   border-style: solid;
@@ -67,8 +46,18 @@
 }
 
 .date-select{
-  width: 100%;
-  height: 100rpx;
+  margin: 0 auto;
+  width: 95%;
+  padding: 20rpx 10rpx;
+  border: 2rpx solid rgb(62, 148, 219);
+  border-radius: 2mm;
+}
+
+.date{
+  display: flex;
+  justify-content: space-between;
+  line-height: 35rpx;
+  font-size: 32rpx;
 }
 
 .submit{

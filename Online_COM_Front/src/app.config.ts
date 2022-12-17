@@ -23,6 +23,7 @@ export default defineAppConfig({
     'pages/user/user',
     'pages/userFunc/userFunc',
     'pages/Detail/Detail',
+    'pages/edit/edit'
   ],
   window: {
     backgroundTextStyle: 'light',

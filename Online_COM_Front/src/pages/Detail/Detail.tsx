@@ -25,7 +25,6 @@ type PageState = {
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
 const app = Taro.getApp();
-let timer;
 
 class Detail extends Component<IProps, PageState>{
   constructor(props){
@@ -59,8 +58,10 @@ class Detail extends Component<IProps, PageState>{
   }
 
   componentWillUnmount () {
-    clearTimeout(timer);
+    clearTimeout(this.timer);
   }
+
+  timer;
 
   $instance = getCurrentInstance()
 
@@ -76,7 +77,6 @@ class Detail extends Component<IProps, PageState>{
       'GET',
       {
         id : JSON.parse(this.$instance.router?.params.id ? this.$instance.router?.params.id : '0'),
-        classify: this.$instance.router?.params.class,
       }
     )
     promise.then((res) => {
@@ -138,7 +138,7 @@ class Detail extends Component<IProps, PageState>{
         icon: 'success',
         duration: 2000
       });
-      timer = setTimeout(() =>{
+      this.timer = setTimeout(() =>{
         this.setState({
         OnComment: false,
         uploadComment: '',

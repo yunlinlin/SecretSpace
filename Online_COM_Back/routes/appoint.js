@@ -15,7 +15,7 @@ appointRouter.get('/', new AuthUse(1).w, async (req, res, next) => {
         res.status(500).json('服务器错误')
         console.log('查询数据失败');
       }else{
-        if(result.length >0){
+        if(result.length > 0){
           res.json({
             id: result[0].id,
             status: result[0].status,
@@ -85,7 +85,7 @@ appointRouter.post('/update', new AuthUse(1).w, async (req, res, next) => {
               }
             }
             const update = [`UPDATE appointment SET status = ?, updated_at = ? WHERE id = ?`,
-                            `INSERT INTO appointDetail(uid, room, appoint_id, selectIndex, result, created_at) value(?, ?, ?, ?, ?, ?)`];
+                            `INSERT INTO appointDetail(uid, room, appointId, selectIndex, reason, created_at) value(?, ?, ?, ?, ?, ?)`];
             const updateParams = [[JSON.stringify(status), updatetime, JSON.parse(id)],
                                   [headers.uid, room, JSON.parse(id), selectIndex, reasonValue, updatetime]];
             let updateArr = update.map((sql, index) => {
@@ -133,20 +133,135 @@ appointRouter.post('/update', new AuthUse(1).w, async (req, res, next) => {
   })
 })
 
-appointRouter.post('/detail', new AuthUse(1).w, async (req, res, next) => {
-    const { user, body } = req;
-    const { year, month, date, selectTime, result} = body;
-    const addtime = getTime('date_time');
-    let promise = await mysql.set('appointDetail', {
-        year: year,
-        month: month,
-        date: date,
-        selectTime: selectTime,
-        result: result,
-        uid: user.id,
-        addtime: addtime,
-    });
-    res.json(promise);
+appointRouter.get('/user_upload', new AuthUse(1).w, async (req, res, next) => {
+  const { uid, startIndex, itemNum } = req.query;
+  const select = 'SELECT id, appointId, room, selectIndex, reason, created_at FROM appointDetail WHERE uid = ? ORDER BY created_at DESC LIMIT ?, ?';
+  const selectParam = [JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];
+  pool.sqlQuery(select, selectParam, function(err, result){
+    if(err){
+      res.status(500).json('服务器错误');
+      console.log(err);
+    }else{
+      if(result.length > 0){
+        let selectDatePromise = [];
+        for(let i = 0; i < result.length; i++){
+          result[i].selectIndex = JSON.parse(result[i].selectIndex);
+          selectDatePromise.push(new Promise((resolve, reject) =>{
+            const selectTime = 'SELECT year, month, date FROM appointment WHERE id = ?';
+            const selectTimeParam = [result[i].appointId];
+            pool.query(selectTime, selectTimeParam, function(error, dateResult){
+                if(error){
+                    console.log(error);
+                    reject(error);
+                }
+                else{
+                  result[i].date = dateResult[0].year + '-' + dateResult[0].month + '-' + dateResult[0].date;
+                  resolve();
+                }
+            })
+          }))
+        }
+        Promise.all(selectDatePromise).then(() => {
+            res.json(result);
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).json('获取预约信息失败');
+        })
+      }else{
+        res.json(result);
+      }
+    }
+  });
+})
+
+appointRouter.get('/user_upload/delete', new AuthUse(1).w, async (req, res, next) => {
+  const { id, appointId, selectIndex } = req.query;
+  const updatetime = getTime('date_time');
+  pool.getConnection((err, connection) => {
+    if(err){
+      console.log('预约建立连接失败' + err);
+      res.status(500).JSON('预约失败');
+      connection.release();
+    }
+    // 开始执行预约事务
+		connection.beginTransaction((beginErr) => {
+		  if (beginErr) {
+        console.log('预约事务开始失败' + err)
+        res.status(500).JSON('预约失败');
+        connection.rollback(function (err) {
+          if(err){
+            console.log("预约事务回滚失败：" + err);
+          }
+          connection.release();
+        });
+		  }
+      const select = 'SELECT status FROM appointment WHERE id = ? FOR UPDATE';
+      const selectParam = [JSON.parse(appointId)];
+      let appoint = new Promise((resolve, reject) => {
+        connection.query(select, selectParam, (sqlErr, result) => {
+          if (sqlErr) {
+            reject(sqlErr);
+          }else{
+            let status = JSON.parse(result[0].status);
+            let index = JSON.parse(selectIndex);
+            for(let i = 0; i < index.length; i++){
+              if(status[index[i]] === 1){
+                status[index[i]] = 0;
+              }else{
+                reject('预约取消失败');
+                connection.rollback(function (err) {
+                  if (err) console.log("预约事务回滚失败：" + err);
+                  connection.release();
+                });
+              }
+            }
+            const deleteAppoint = [`UPDATE appointment SET status = ?, updated_at = ? WHERE id = ?`,
+                                   `DELETE FROM appointDetail WHERE id IN (?)`];
+            const deleteParams = [[JSON.stringify(status), updatetime, JSON.parse(appointId)],
+                                  [JSON.parse(id)]];
+            let deleteArr = deleteAppoint.map((sql, index) => {
+              return new Promise((sqlResolve, sqlReject) => {
+                const data = deleteParams[index];
+                connection.query(sql, data, (sqlErr, result) => {
+                  if (sqlErr) {
+                    sqlReject(sqlErr);
+                  }
+                  sqlResolve(result);
+                });
+              });
+            });
+            Promise.all(deleteArr).then(() => {
+              // 提交事务
+              connection.commit(function (commitErr) {
+              if (commitErr) {
+                console.log("预约提交事务失败:" + commitErr);
+                res.status(500).json('取消预约失败');
+                connection.rollback(function (err) {
+                  if(err){
+                    console.log("预约事务回滚失败：" + err);
+                  }
+                connection.release();
+                });
+              }
+              res.status(200).json('取消预约成功');
+              connection.release();
+              });
+            }).catch((error) => {
+              // 多条sql语句执行中 其中有一条报错 直接回滚
+              res.status(500).json('取消预约失败');
+              connection.rollback(function () {
+                console.log("sql运行失败: " + error);
+                connection.release();
+              });
+            })
+          }
+        })
+      })
+      appoint.catch((error) => {
+        res.status(500).json('取消预约失败');
+      })
+    })
+  })
 })
 
 module.exports =  appointRouter ;

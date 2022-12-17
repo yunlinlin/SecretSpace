@@ -10,9 +10,9 @@ imageRouter.get('/getImage', function(req, res, next) {
   fs.readFile(path.join(__dirname, '..', imagePath), function(err, data){
     if (err) {
         console.log(err);
-        res.status(404).send('读取图片错误')
+        res.status(500).send('读取图片错误')
     }else {
-        res.send(data)
+        res.status(200).send(data);
     }
   })
 });

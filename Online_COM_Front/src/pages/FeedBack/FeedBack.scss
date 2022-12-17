@@ -27,10 +27,13 @@
 
 .issue-fab{
   position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   left: 275rpx;
   bottom: 80rpx;
-  background-color: rgb(206, 219, 62);
   height: 80rpx;
   width: 200rpx;
   border-radius: 3mm;
+  background-color: rgb(206, 219, 62);
 }

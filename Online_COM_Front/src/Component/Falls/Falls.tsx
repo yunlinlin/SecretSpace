@@ -6,7 +6,7 @@ import './Falls.scss'
 
 type PageStateProps = {
   url: string; //传进来的url是路由(相对路径)
-  class: string | undefined; //使用瀑布流的内容类型
+  class?: string; //使用瀑布流的内容类型
   scrollViewHeight: number; //滚动视图高度(px)
 }
 
@@ -106,15 +106,13 @@ class Falls extends Component<IProps, PageState>{
               }
               let index = columnHeight[1] + this.data.rightHeight < columnHeight[0] + this.data.leftHeight ? 1 : 0;
               if(res.data[i].image.length !== 0){
-                res.data[i].itemHeight = Math.round((res.data[i].image[0].height * imgWidth / res.data[i].image[0].width + row * 42  + 143) * windowWidth / 750);        //条目高度计算
+                res.data[i].itemHeight = Math.round((res.data[i].image[0].height * imgWidth / res.data[i].image[0].width + row * 42  + (this.props.class === 'feedback' ? 103 : 143)) * windowWidth / 750);        //条目高度计算, 143（一般发布内容）是其余边距加起来的总高度
               }else{
-                res.data[i].itemHeight = Math.round((400.0 * imgWidth / 400.0 + row * 42 + 143) * windowWidth / 750); //400, 400为默认图片尺寸
+                res.data[i].itemHeight = Math.round((400.0 * imgWidth / 400.0 + row * 42 + (this.props.class === 'feedback' ? 103 : 143)) * windowWidth / 750); //400, 400为默认图片尺寸
               }
               columnHeight[index] += (res.data[i].itemHeight + Math.round(60 * windowWidth / 750));
               columns[index].push(res.data[i]);
             }
-            // columnHeight[0] -= 28 * (windowWidth / 750.0);
-            // columnHeight[1] -= 28 * (windowWidth / 750.0);
             this.data.leftHeight += columnHeight[0];
             this.data.rightHeight += columnHeight[1];
             this.data.isLoading = false;

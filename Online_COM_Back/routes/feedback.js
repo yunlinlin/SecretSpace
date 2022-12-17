@@ -29,9 +29,9 @@ feedbackRouter.post('/add', new AuthUse(1).w, async (req, res, next) => {
                   `SET @feedback_Id = LAST_INSERT_ID()`,
                   `INSERT INTO feedbackContent(contentValue, imageNum, feedback_id, sort, created_at) value('` + contentValue + `', ` + imageNum + `, @feedback_Id, '` + sort + `', '` + nowDate + `')`,
                   `SET @sort_Id = LAST_INSERT_ID()`,
-                  `INSERT INTO image(sortName, localPath, imageRank, width, height) value ?`,
+                  `INSERT INTO image(sort, localPath, imageRank, width, height) value ?`,
                   `UPDATE image set sortId = @sort_Id WHERE localPath IN (?)`,
-                  `INSERT INTO image(sortName, localPath, imageRank, width, height, sortId) value('feedback', '` + imageSeries[showImageIndex].reqPath + `', ` + 1 + `, ` + imageSeries[showImageIndex].width + `, ` + imageSeries[showImageIndex].height + `, @feedback_Id)`];
+                  `INSERT INTO image(sort, localPath, imageRank, width, height, sortId) value('feedback', '` + imageSeries[showImageIndex].reqPath + `', ` + 1 + `, ` + imageSeries[showImageIndex].width + `, ` + imageSeries[showImageIndex].height + `, @feedback_Id)`];
         addSqlParams = [[headers.uid, topicValue, nowDate],
                         [],
                         [],
@@ -79,7 +79,7 @@ feedbackRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
                 let listPromise = [];
                 for(let i = 0; i < result.length; i++){
                     listPromise.push(new Promise((resolve, reject) =>{
-                        const showImage = 'SELECT * FROM image WHERE sortName = ? AND sortId = ? AND imageRank = 1 LIMIT 1';
+                        const showImage = 'SELECT * FROM image WHERE sort = ? AND sortId = ? AND imageRank = 1 LIMIT 1';
                         const Params = [ classify, result[i].id ];
                         pool.query(showImage, Params, function(error, imageResult){
                             if(error){
@@ -117,7 +117,7 @@ feedbackRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
         for(let i = 0; i < result[1].length; i++){
             imagePromise.push(new Promise((resolve, reject) =>{
                 if(result[1][i].imageNum > 0){
-                    const imageSelect = 'SELECT * FROM image WHERE sortId = ? AND sortName = \'feedbackContent\' LIMIT ?';
+                    const imageSelect = 'SELECT * FROM image WHERE sortId = ? AND sort = \'feedbackContent\' LIMIT ?';
                     const imageParams = [result[1][i].id, result[1][i].imageNum];
                     pool.query(imageSelect, imageParams, function(error, imageResult){
                         if(error){
@@ -174,7 +174,7 @@ feedbackRouter.post('/re-add', new AuthUse(1).w, async (req, res, next) => {
         }
         addSql = [`INSERT INTO feedbackContent(contentValue, imageNum, feedback_id, sort, created_at) value('` + contentValue + `', ` + imageNum + `, ` + id + `, '` + sort + `', '` + nowDate + `')`,
                   `SET @sort_Id = LAST_INSERT_ID()`,
-                  `INSERT INTO image(sortName, localPath, imageRank, width, height) value ?`,
+                  `INSERT INTO image(sort, localPath, imageRank, width, height) value ?`,
                   `UPDATE image set sortId = @sort_Id WHERE localPath IN (?)`];
         addSqlParams = [[],
                         [],
@@ -192,6 +192,47 @@ feedbackRouter.post('/re-add', new AuthUse(1).w, async (req, res, next) => {
         res.status(500).json('上传失败');
         let folder = imageSeries[i].reqPath;
         deleteFolder(folder);
+    })
+})
+
+feedbackRouter.get('/user_upload', new AuthUse(1).w, async (req, res, next) => {
+    const { uid, classify, startIndex, itemNum } = req.query;
+    let select = 'SELECT users.nickname, users.avatar, fb.id, fb.uid, fb.topicValue, fb.created_at FROM feedbackTopic fb INNER JOIN users ON fb.uid = users.uid WHERE users.uid = ? ORDER BY fb.created_at DESC LIMIT ?, ?'
+    let selectParams = [JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];  
+    pool.query(select, selectParams, function(err, result){
+        if(err){
+            res.status(500).json('获取数据失败');
+            console.log(err, '获取活动信息数据失败');
+        }
+        else{
+            if(result.length > 0){
+                let listPromise = [];
+                for(let i = 0; i < result.length; i++){
+                    listPromise.push(new Promise((resolve, reject) =>{
+                        const showImage = 'SELECT * FROM image WHERE sort = ? AND sortId = ? AND imageRank = 1 LIMIT 1';
+                        const Params = [ classify, result[i].id ];
+                        pool.query(showImage, Params, function(error, imageResult){
+                            if(error){
+                                console.log('获取首页图片失败');
+                                reject(error);
+                            }
+                            else{
+                                result[i].image = imageResult;
+                                resolve(result[i]);
+                            }
+                        })
+                    }))
+                }
+                Promise.all(listPromise).then((result) => {
+                    res.json(result);
+                }).catch((error) => {
+                    res.status(500).json('获取封面失败');
+                    console.log(error);
+                })
+            }else{
+                res.json(result);
+            }
+        }
     })
 })
 

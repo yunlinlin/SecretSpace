@@ -11,8 +11,15 @@ let upload = multer({storage: multer.diskStorage({destination: (req, file, callb
 uploadRouter.post('/imageAdd', new AuthUse(1).w, upload.single('file'), async function(req, res, next){
     const {file, body, headers} = req;
     const {title, className, num} = body;
-    let folder = '/images/' + className + '/' + title + '-' + headers.uid + '-' + getTime('date');
+    let folder = '/images/' + className + '/topic=' + title + '-' + headers.uid + '-' + getTime('stamp');
     uploadImage(file, folder, num, res);
+})
+
+uploadRouter.post('/imageUpdate', new AuthUse(1).w, upload.single('file'), async function(req, res, next){
+    const {file, body} = req;
+    const {foldName, num} = body;
+    fold = foldName.split('getImage?path=')[1]
+    uploadImage(file, fold, num, res);
 })
 
 module.exports = uploadRouter;

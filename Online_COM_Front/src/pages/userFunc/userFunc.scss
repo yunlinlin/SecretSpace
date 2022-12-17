@@ -3,6 +3,30 @@
     height: 100%;
 }
 //我的发布
+.class-select{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: 200rpx;
+    justify-content: center;
+}
+
+.class-select Text{
+    line-height: 50rpx;
+    font-size: 40rpx;
+}
+
+.picker{
+    width: 90%;
+    margin-top: 30rpx;
+    padding: 20rpx 10rpx;
+    border-radius: 1.5mm;
+    border: 3rpx solid rgb(27, 149, 210);
+    &-object{
+        margin-left: auto;
+    }
+}
+
 .tab{
     width: 100%;
     height: 80rpx;

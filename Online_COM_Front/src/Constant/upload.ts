@@ -10,11 +10,11 @@ function uploadImages(classname: string, files: Array<any>, topicValue: string){
         uploads.push(new Promise((resolve,reject) => {
           Taro.uploadFile({
                 url: app.config.api + '/upload/imageAdd', //图片上传接口
-                filePath: files[i].url,
+                filePath: files[i].localPath,
                 name: 'file',
                 formData: {
-                  title: topicValue,
-                  className: classname,
+                  title: topicValue,                      //所上传图片对应的主题
+                  className: classname,                  //所上传图片对应的类别（与主题都是构成文件夹的要素）
                   num : i+1,
                 },
                 header: {
@@ -24,7 +24,38 @@ function uploadImages(classname: string, files: Array<any>, topicValue: string){
                 },
                 success: (res) => {
                   if(res.statusCode === 500){
-                    reject(new Error(JSON.parse(res.data)));
+                    reject();
+                  }else{
+                    resolve(res);
+                  }                    
+                },
+                fail : reject,
+              })
+        }))
+    }
+    return uploads;
+}
+
+function reloadImages(files: Array<any>, foldName: string, index: number){
+  let uploads = new Array<Promise<any>>();
+    for(let i=0;i<files.length;i++){
+        uploads.push(new Promise((resolve,reject) => {
+          Taro.uploadFile({
+                url: app.config.api + '/upload/imageUpdate', //图片重新上传接口
+                filePath: files[i].localPath,
+                name: 'file',
+                formData: {
+                  foldName: foldName,
+                  num : index+i+1,
+                },
+                header: {
+                  'authorrization': `Bearer ${Taro.getStorageSync('USER')}`,
+                  'content-type': 'application/x-www-form-urlencoded',
+                  'uid': `${Taro.getStorageSync('UID')}`,
+                },
+                success: (res) => {
+                  if(res.statusCode === 500){
+                    reject();
                   }else{
                     resolve(res);
                   }                    
@@ -40,4 +71,5 @@ export {
     selector,
     classifier,
     uploadImages,
+    reloadImages,
 }

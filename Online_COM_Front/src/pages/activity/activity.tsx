@@ -14,7 +14,6 @@ type PageDispatchProps = {
 type PageOwnProps = {}
 
 type PageState = {
-  timer : any; //定时器
   scrollViewHeight : number; //瀑布流高度
   year : number;
   month: number,
@@ -43,34 +42,33 @@ class Activity extends Component<IProps, PageState>{
       dateselect: 0,
       render: 0,
       scrollViewHeight: 0,
-      timer: '',
     }
   }
 
   componentDidMount(){
-    this.setState({
-      timer: setTimeout(() => {
-        let query = Taro.createSelectorQuery();
-        query.select('#calendar').boundingClientRect();
-        query.exec((res) => {
-          let calendarHeight = res[0].height;
-          let scrollViewHeight = windowHeight - calendarHeight;
-          this.setState({
-              scrollViewHeight: scrollViewHeight,
-          });
+    this.timer = setTimeout(() => {
+      let query = Taro.createSelectorQuery();
+      query.select('#calendar').boundingClientRect();
+      query.exec((res) => {
+        let calendarHeight = res[0].height;
+        let scrollViewHeight = windowHeight - calendarHeight;
+        this.setState({
+            scrollViewHeight: scrollViewHeight,
         });
-        }, 200)
-    })
+      });
+      }, 200);
   }
 
   componentWillUnmount () {
-    clearTimeout(this.state.timer)
+    clearTimeout(this.timer);
   }
+
+  timer;        //定时器
 
   componentDidShow () { }
 
   componentDidHide () {
-    clearTimeout(this.state.timer)
+    clearTimeout(this.timer);
   }
 
   dateChange(year, month, date, dateselect){
@@ -94,19 +92,17 @@ class Activity extends Component<IProps, PageState>{
   }
 
   setScrollHeight(){
-    this.setState({
-      timer: setTimeout(() => {
-        let query = Taro.createSelectorQuery();
-        query.select('#calendar').boundingClientRect();
-        query.exec((res) => {
-          let calendarHeight = res[0].height;
-          let scrollViewHeight = windowHeight - calendarHeight;
-          this.setState({
-              scrollViewHeight: scrollViewHeight,
-          });
+    this.timer = setTimeout(() => {
+      let query = Taro.createSelectorQuery();
+      query.select('#calendar').boundingClientRect();
+      query.exec((res) => {
+        let calendarHeight = res[0].height;
+        let scrollViewHeight = windowHeight - calendarHeight;
+        this.setState({
+            scrollViewHeight: scrollViewHeight,
         });
-        }, 200)
-    })
+      });
+      }, 200);
   }
 
   handOnAcitivity(){

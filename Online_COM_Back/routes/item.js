@@ -2,7 +2,7 @@ let express = require('express')
 const pool = require('../utils/sqlPool')
 const { AuthUse } = require('../utils/jwt')
 const { getTime } = require('../utils/Time')
-const { deleteFolder } = require('../utils/file')
+const { deleteFolder, deleteFile } = require('../utils/file')
 
 let itemRouter = express.Router();
 
@@ -22,7 +22,7 @@ itemRouter.post('/add', new AuthUse(1).w, async (req, res, next) => {
         }
         addSql = [`INSERT INTO item(uid, topicValue, contentValue, created_at, likeCount, storeCount, imageNum, commentNum, classify, checked) value(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                   `SET @sortId = @@IDENTITY`,
-                  `INSERT INTO image(sortName, localPath, imageRank, width, height) value ?`,
+                  `INSERT INTO image(sort, localPath, imageRank, width, height) value ?`,
                   `UPDATE image set sortId = @sortId WHERE localPath IN (?)`];
         addSqlParams = [[headers.uid, topicValue, contentValue, nowTime, 0, 0, imageSeries.length, 0, classify, 0],
                         [],
@@ -64,7 +64,7 @@ itemRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
                 let listPromise = [];
                 for(let i = 0; i < result.length; i++){
                     listPromise.push(new Promise((resolve, reject) =>{
-                        const showImage = 'SELECT localPath, width, height FROM image WHERE sortName = ? AND sortId = ? AND imageRank = 1 LIMIT 1';
+                        const showImage = 'SELECT localPath, width, height FROM image WHERE sort = ? AND sortId = ? ORDER BY imageRank LIMIT 1';
                         const Params = [ classify, result[i].id ];
                         pool.query(showImage, Params, function(error, imageResult){
                             if(error){
@@ -93,10 +93,10 @@ itemRouter.get('/list', new AuthUse(1).w, async (req, res, next) => {
 
 itemRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
     const { query, headers } = req;
-    const { id, classify } = query;
+    const { id } = query;
     let likeResult = false;
     let storeResult = false;
-    const select = 'SELECT topicValue, contentValue, created_at, likeCount, storeCount, imageNum ,commentNum FROM item WHERE id = ?';
+    const select = 'SELECT topicValue, classify, contentValue, created_at, likeCount, storeCount, imageNum ,commentNum FROM item WHERE id = ?';
     const selectParams = [JSON.parse(id)];
     let extraSelect = [];
     let extraParams = [];
@@ -107,8 +107,8 @@ itemRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
         }
         else{
             if(detailResult[0].imageNum > 0){
-                extraSelect.push('SELECT * FROM image WHERE sortId = ? AND sortName = ? LIMIT ?');
-                extraParams.push([JSON.parse(id), classify, detailResult[0].imageNum]);
+                extraSelect.push('SELECT * FROM image WHERE sortId = ? AND sort = ? ORDER BY imageRank LIMIT ?');
+                extraParams.push([JSON.parse(id), detailResult[0].classify, detailResult[0].imageNum]);
             }else{
                 extraSelect.push('');
                 extraParams.push([]);
@@ -122,14 +122,14 @@ itemRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
             }
             if(detailResult[0].likeCount > 0){
                 extraSelect.push('SELECT 1 FROM likeRecord WHERE sort = ? AND itemId = ? LIMIT 1');
-                extraParams.push([classify, JSON.parse(id)]);
+                extraParams.push([detailResult[0].classify, JSON.parse(id)]);
             }else{
                 extraSelect.push('');
                 extraParams.push([]);
             }
             if(detailResult[0].storeCount > 0){
                 extraSelect.push('SELECT 1 FROM storeRecord WHERE sort = ? AND itemId = ? LIMIT 1');
-                extraParams.push([classify, JSON.parse(id)]);
+                extraParams.push([detailResult[0].classify, JSON.parse(id)]);
             }else{
                 extraSelect.push('');
                 extraParams.push([]);
@@ -179,7 +179,7 @@ itemRouter.get('/detail', new AuthUse(1).w, async (req, res, next) => {
                         });
                     }).catch((error) => {
                         console.log(error);
-                        res.json('获取点赞信息失败');
+                        res.status(500).json('获取点赞信息失败');
                     })
                 }else{
                     res.json({
@@ -324,7 +324,7 @@ itemRouter.post('/commentLike', new AuthUse(1).w, async (req, res, next) => {
 
 itemRouter.get('/user_upload', new AuthUse(1).w, function(req, res, next) {
     const { uid, itemNum, startIndex } = req.query;
-    const select = 'SELECT users.nickname, users.avatar, item.id, item.uid, item.topicValue, item.likeCount, item.storeCount, item.created_at, item.classify FROM item INNER JOIN users ON item.uid = users.uid WHERE item.uid = ? ORDER BY item.created_at DESC LIMIT ?, ?';
+    const select = 'SELECT id, classify, topicValue, created_at FROM item WHERE uid = ? ORDER BY created_at DESC LIMIT ?, ?';
     const selectParams = [JSON.parse(uid), JSON.parse(startIndex), JSON.parse(itemNum)];
     pool.query(select, selectParams, function(err, result){
         if(err){
@@ -332,33 +332,90 @@ itemRouter.get('/user_upload', new AuthUse(1).w, function(req, res, next) {
             console.log(err, '获取活动信息数据失败');
         }
         else{
-            if(result.length > 0){
-                let listPromise = [];
-                for(let i = 0; i < result.length; i++){
-                    listPromise.push(new Promise((resolve, reject) =>{
-                        const showImage = 'SELECT * FROM image WHERE sortId = ? AND sortName = ? AND imageRank = 1';
-                        const Params = [result[i].id, result[i].classify];
-                        pool.query(showImage, Params, function(error, imageResult){
-                            if(error){
-                                console.log('获取首页图片失败');
-                                reject(error);
-                            }
-                            else{
-                                result[i].image = imageResult;
-                                resolve(result[i]);
-                            }
-                        })
-                    }))
-                }
-                Promise.all(listPromise).then((result) => {
-                    res.json(result);
-                }).catch((error) => {
-                    res.status(500).json('获取封面失败');
-                    console.log(error);
-                })
+            res.json(result);
+        }
+    })
+});
+
+itemRouter.get('/user_upload/delete', new AuthUse(1).w, function(req, res, next) {
+    const { id, sort } = req.query;
+    try{
+        const selectFold = 'SELECT localPath FROM image WHERE sortId = ? AND sort = ? LIMIT 1';
+        const selectFoldParams = [JSON.parse(id), sort];
+        pool.query(selectFold, selectFoldParams, function(error, foldResult){
+            if(error){
+                throw error;
             }else{
-                res.json(result);
+                let fold = (foldResult[0].split('getImage?path=')[1]).split(/\/[0-9]+\./)[0];
+                deleteFolder(fold);
             }
+        })
+        const deleteItem = [`DELETE FROM item WHERE id = ?`,
+                            `DELETE FROM image WHERE sortId = ? AND sort = ?`,
+                            `DELETE FROM likeRecord WHERE itemId = ? AND sort = ?`,
+                            `DELETE FROM storeRecord WHERE itemId = ? AND sort = ?`,
+                            `SELECT @Id := id from comment WHERE itemId = ?`,
+                            `DELETE FROM likeRecord WHERE itemId = @Id AND sort = ?`,
+                            `DELETE FROM comment WHERE itemId = ?`,];
+        const deleteParams = [[JSON.parse(id)], 
+                              [JSON.parse(id), sort], 
+                              [JSON.parse(id), sort],
+                              [JSON.parse(id), sort],
+                              [JSON.parse(id)],
+                              ['comment'],
+                              [JSON.parse(id)]];
+        let deleteItemPromise = pool.transcation(deleteItem, deleteParams);
+        deleteItemPromise.then(() => {
+            res.status(200).json('删除成功')
+        }).catch((error) => {
+            throw error;
+        })
+    }catch(error){
+        console.log(error);
+        res.status(500).json('删除失败');
+    }
+});
+
+itemRouter.post('/update', new AuthUse(1).w, function(req, res, next) {
+    const {id, topicValue, contentValue, imageInfo, deleteImageId, deleteImagePath, imageNum, sort} = req.body;
+    let imageSeries = JSON.parse(imageInfo);
+    let updateSql = [];
+    let updateSqlParams = [];
+    if(imageSeries.length > 0){
+        let imageInsert = new Array(imageSeries.length);
+        let imagePath = new Array(imageSeries.length);
+        for(let i = 0;i < imageSeries.length; i++){
+            imageInsert[i] = [sort, id, imageSeries[i].reqPath, imageSeries[i].imageRank, imageSeries[i].width, imageSeries[i].height];
+            imagePath[i] = imageSeries[i].reqPath;
+        }
+        updateSql = [`UPDATE item SET topicValue = ?, contentValue = ?, imageNum = ? WHERE id = ?`,
+                     `INSERT INTO image(sort, sortId, localPath, imageRank, width, height) value ?`];
+        updateSqlParams = [[topicValue, contentValue, JSON.parse(imageNum), JSON.parse(id)],
+                           [imageInsert]];
+    }else{
+        updateSql = [`UPDATE item SET topicValue = ?, contentValue = ?, imageNum = ? WHERE id = ?`];
+        updateSqlParams = [[topicValue, contentValue, JSON.parse(imageNum), JSON.parse(id)]];
+    }
+    if(JSON.parse(deleteImageId).length > 0){
+        updateSql.push(`DELETE FROM image WHERE id IN (?)`);
+        updateSqlParams.push([JSON.parse(deleteImageId)]);
+    }
+    let updatePromise = pool.transcation(updateSql, updateSqlParams);
+    updatePromise.then(() => {
+        if(JSON.parse(deleteImagePath).length > 0){
+            let deletePath = JSON.parse(deleteImagePath);
+            for(i = 0; i < deletePath.length; i++){
+                filePath = deletePath[i].split('getImage?path=')[1];
+                deleteFile(filePath);
+            }
+        }
+        res.status(200).json('更新成功');
+    }).catch((error) => {
+        console.log(error);
+        res.status(500).json('更新失败');
+        for(i = 0; i < imageInfo.length; i++){
+            localPath = imageInfo[i].reqPath.split('getImage?path=')[1];
+            deleteFile(localPath);
         }
     })
 });

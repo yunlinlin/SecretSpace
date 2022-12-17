@@ -18,7 +18,7 @@ searchRouter.get('/searchItem', new AuthUse(1).w, function(req, res, next) {
               let listPromise = [];
               for(let i = 0; i < result.length; i++){
                   listPromise.push(new Promise((resolve, reject) =>{
-                      const showImage = 'SELECT * FROM image WHERE sortName in (?) AND sortId = ? AND imageRank = 1';
+                      const showImage = 'SELECT * FROM image WHERE sort in (?) AND sortId = ? AND imageRank = 1';
                       const Params = [searchClass, result[i].id];
                       pool.query(showImage, Params, function(error, imageResult){
                           if(error){

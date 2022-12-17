@@ -186,7 +186,7 @@ class AppointTime extends Component<IProps, PageState>{
             >
               <View className='order-body'>
                 {
-                  timeList.map((item1,index1) => {
+                  timeList.room1.map((item1,index1) => {
                     return(
                       <View className='order-time' key={index1} >
                         {

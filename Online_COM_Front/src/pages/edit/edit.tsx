@@ -1,9 +1,9 @@
 import { Component } from 'react'
 import { View, Text, Picker, Textarea } from '@tarojs/components'
 import Taro, {getCurrentInstance} from '@tarojs/taro'
-import { selector, classifier, uploadImages } from '../../Constant/upload'
+import { uploadImages, reloadImages } from '../../Constant/upload'
 import { ImagePicker } from '../../Component/ImagePicker/ImagePicker'
-import './upload.scss'
+import './edit.scss'
 
 
 type PageStateProps = {
@@ -21,21 +21,20 @@ type PageState = {
   contentValue : string;
   files : any ;
   dateSelect : string;
-  selectorChecked : number;
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Upload {
-  state: PageState;
-  props: IProps;
-}
+// interface Upload {
+//   state: PageState;
+//   props: IProps;
+// }
 
 const app = Taro.getApp();
 let addRoute = '';
 let data = {};
 
-class Upload extends Component{
+class edit extends Component<IProps, PageState>{
   constructor(props){
     super(props);
     this.state = {
@@ -44,17 +43,45 @@ class Upload extends Component{
       placeValue : '',
       contentValue : '',
       files : [],
-      dateSelect: '2000-01-01',
-      selectorChecked: -1,
+      dateSelect: this.data.date.getFullYear() + '-' + (this.data.date.getMonth() + 1) + '-' + this.data.date.getDate(),
     }
   }
 
-  componentDidMount(): void {
-    if(this.$instance.router?.params.sort !== 'item'){
-      this.setState({
-        selectorChecked: -2,
+  componentDidMount(){
+    let promise = app.post.request(
+      this.$instance.router?.params.url + '/detail',
+      'GET',
+      {
+        id : JSON.parse(this.$instance.router?.params.id ? this.$instance.router?.params.id : '0'),
+      }
+    )
+    promise.then((res) => {
+      res.data.imageList.length > 0 ? this.data.foldName = res.data.imageList[0].localPath.split(/\/[0-9]+\./)[0] : this.data.foldName = '';
+      res.data.imageList.map((item) => {item.localPath = app.config.file + item.localPath});
+      if(this.$instance.router?.params.url === '/activity'){
+        this.setState({
+          topicValue: res.data.detail.topicValue,
+          timeValue: res.data.detail.timeValue,
+          placeValue: res.data.detail.placeValue,
+          contentValue: res.data.detail.contentValue,
+          files: res.data.imageList,
+        })
+      }else{
+        this.setState({
+          topicValue: res.data.detail.topicValue,
+          contentValue: res.data.detail.contentValue,
+          files: res.data.imageList,
+        })
+      }
+      this.data.oldFileNum = res.data.imageList.length ? res.data.imageList[res.data.imageList.length-1].imageRank : 0;
+      this.data.oldFiles = res.data.imageList;
+    }).catch((error) => {
+      Taro.showToast({
+        title: error,
+        icon: 'error',
+        duration: 2000,
       })
-    }
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -65,12 +92,23 @@ class Upload extends Component{
 
   $instance = getCurrentInstance()
 
+  data = {
+    date: new Date(),     //现在日期
+    oldFiles: [],         //原有图片
+    newFiles: [],         //新加图片
+    foldName: '',          //原有图片文件夹
+    oldFileNum: 0,        //原有图片数量
+    deleteImageId: new Array<number>(0),    //需要从已有图片中删去的图片的id
+    deleteImagePath: new Array<string>(0),   //需要从已有图片中删去的图片的路径
+    selectorChecked: -1,  //选择呈现需要上传的内容
+  }
+
   componentDidShow () { }
 
   componentDidHide () { }
 
   uploadClass(e){
-    this.setState({ selectorChecked: parseInt(e.detail.value) });
+    this.data.selectorChecked = parseInt(e.detail.value);
   }
 
   handOnTopic(e){
@@ -97,10 +135,20 @@ class Upload extends Component{
     })
   }
 
-  handOnImage(files){
+  handOnNewImage(files: any){
     this.setState({
-      files
+      files: [...this.data.oldFiles, ...files],
     })
+    this.data.newFiles = files;
+  }
+
+  changeOldImage(files, id: number, path: string){
+    this.setState({
+      files: [...files, ...this.data.newFiles],
+    })
+    this.data.oldFiles = files;
+    this.data.deleteImageId.push(id);
+    this.data.deleteImagePath.push(path);
   }
 
   handOnDate(e){
@@ -110,9 +158,6 @@ class Upload extends Component{
   }
 
   Back(){
-    let pages = Taro.getCurrentPages();
-    let beforePage = pages[pages.length -2];
-    beforePage.onLoad();
     Taro.navigateBack({
       delta:1,
     });
@@ -120,37 +165,42 @@ class Upload extends Component{
 
   uploadDetail(){
     let image = new Array<object>();
-    let uploads = uploadImages(this.$instance.router?.params.sort === 'item' ? classifier[this.state.selectorChecked] : (this.$instance.router?.params.sort + ''), this.state.files, this.state.topicValue);
+    let uploads;
+    if(this.data.oldFileNum === 0){
+      uploads = uploadImages(this.$instance.router?.params.class?this.$instance.router.params.class:'none', this.data.newFiles, this.state.topicValue);
+    }else{
+      uploads = reloadImages(this.data.newFiles, this.data.foldName, this.data.oldFileNum);
+    }
     Promise.all(uploads).then((res) => {
       res.map((item) => {
-        image.push(JSON.parse(item.data));
+        image.push(JSON.parse(item.data));        //图片在服务器中的位置存入数组
       })
-      let imageInfo = JSON.stringify(image);
-      if(this.$instance.router?.params.sort === 'activity'){
-        addRoute = '/activity/add';
+      let imageInfo = JSON.stringify(image);      //转JSON传输
+      if(this.$instance.router?.params.class === 'activity'){
+        addRoute = '/activity/update';
         data = {
+          id: this.$instance.router?.params.id,
           topicValue: this.state.topicValue,
           timeValue: this.state.timeValue,
           placeValue: this.state.placeValue,
           contentValue: this.state.contentValue,
           dateSelect: this.state.dateSelect,
           imageInfo: imageInfo,
-        }
-      }else if(this.$instance.router?.params.sort === 'feedback'){
-        addRoute = '/feedback/add';
-        data = {
-          topicValue: this.state.topicValue,
-          contentValue: this.state.contentValue,
-          imageInfo: imageInfo,
-          sort: 'Q',
+          deleteImageId: JSON.stringify(this.data.deleteImageId),
+          deleteImagePath: JSON.stringify(this.data.deleteImagePath),
+          imageNum: this.state.files.length,
         }
       }else{
-        addRoute = '/item/add';
+        addRoute = '/item/update';
         data = {
+          id: this.$instance.router?.params.id,
           topicValue: this.state.topicValue,
           contentValue: this.state.contentValue,
           imageInfo: imageInfo,
-          classify: classifier[this.state.selectorChecked],
+          deleteImageId: JSON.stringify(this.data.deleteImageId),
+          deleteImagePath: JSON.stringify(this.data.deleteImagePath),
+          imageNum: this.state.files.length,
+          sort: this.$instance.router?.params.class,
         }
       }
       let promise = app.post.request(
@@ -177,16 +227,7 @@ class Upload extends Component{
   }
 
   render () {
-    if(this.state.selectorChecked === -1){
-      return(
-        <View className='container'>
-          <Picker className='selector' style='margin-top: 200rpx; text-align: center;' mode='selector' range={selector} onChange={(e) => this.uploadClass(e)}>
-            请选择需要上传的类型
-          </Picker>
-        </View>
-      )
-    }else if(this.$instance.router?.params.sort === 'activity')
-    {
+    if(this.$instance.router?.params.class === 'activity'){
       return (
         <View className='container'>
           <View className='title'>
@@ -201,8 +242,8 @@ class Upload extends Component{
             <View className='title-dot'></View>
             <Text className='act-title'>活动日期</Text>
           </View>
-          <Picker className='selector' mode='date' value='' onChange={(e) => this.handOnDate(e)} >
-            <View className='selector-text' >
+          <Picker className='date-select' mode='date' value='' onChange={(e) => this.handOnDate(e)} >
+            <View className='date' >
               <Text>请选择日期</Text>
               <Text style='margin-right: 20rpx; color: rgb(123, 123, 123)' >{this.state.dateSelect}</Text>
             </View>
@@ -237,46 +278,15 @@ class Upload extends Component{
           </View>
           <ImagePicker 
             files={this.state.files}
-            newFiles={this.state.files}
-            changeNewFile={(files) => this.handOnImage(files)}
+            newFiles={this.data.newFiles}
+            oldFiles={this.data.oldFiles}
+            changeOldFile={(files, index, path) => this.changeOldImage(files, index, path)}
+            changeNewFile={(files) => this.handOnNewImage(files)}
           />
           <View className='submit' onClick={() => this.uploadDetail()}>
-            <Text>提交</Text>
+            <Text>重新提交</Text>
           </View>
           <View className='gap'></View>
-        </View>
-      )
-    }else if(this.$instance.router?.params.sort === 'feedback'){
-      return(
-        <View className='container'>
-          <View className='title'>
-            <View className='title-dot'></View>
-            <Text className='act-title'>反馈主题</Text>
-          </View>
-          <Textarea className='content' value={this.state.topicValue} 
-            onInput={(value) => this.handOnTopic(value)} disableDefaultPadding
-            autoHeight maxlength={30} placeholder='反馈问题简述...(建议15字以内)'
-          />
-          <View className='title'>
-            <View className='title-dot'></View>
-            <Text className='act-title'>反馈问题说明</Text>
-          </View>
-          <Textarea className='content' value={this.state.contentValue} 
-            onInput={(e) => this.handOnContent(e)} disableDefaultPadding
-            autoHeight maxlength={600} placeholder='您的具体反馈问题是...(500字以内)'
-          />
-          <View className='title'>
-            <View className='title-dot'></View>
-            <Text className='act-title'>图片信息（第一张作为展板）</Text>
-          </View>
-          <ImagePicker 
-            files={this.state.files}
-            newFiles={this.state.files}
-            changeNewFile={(files) => this.handOnImage(files)}
-          />
-          <View className='submit' onClick={() => this.uploadDetail()}>
-            <Text>提交</Text>
-          </View>
         </View>
       )
     }else{
@@ -304,15 +314,17 @@ class Upload extends Component{
           </View>
           <ImagePicker 
             files={this.state.files}
-            newFiles={this.state.files}
-            changeNewFile={(files) => this.handOnImage(files)}
+            newFiles={this.data.newFiles}
+            oldFiles={this.data.oldFiles}
+            changeOldFile={(files, index, path) => this.changeOldImage(files, index, path)}
+            changeNewFile={(files) => this.handOnNewImage(files)}
           />
           <View className='submit' onClick={() => this.uploadDetail()}>
-            <Text>提交</Text>
+            <Text>重新提交</Text>
           </View>
         </View>
       )
     }
   }
 }
-export default Upload
+export default edit

@@ -34,19 +34,6 @@ function uploadImage(file, folder, name, res){
             width: imageSize.width,
             height: imageSize.height
         })
-        // const imageSql = `INSERT INTO image(path, imageRank, width, height) VALUES(?, ?, ?, ?)`;
-        // const imageSqlParams = [reqUrl, JSON.parse(name), imageSize.width, imageSize.height];
-        // pool.sqlQuery(imageSql, imageSqlParams, function(err, result){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-        //         console.log('添加图片成功');
-        //         res.json({
-        //             imageId: result.insertId,
-        //             message : '成功',
-        //         })
-        //     }
-        // })
     }catch(error){
         if(fs.existsSync(file.path)){
             fs.unlinkSync(file.path);

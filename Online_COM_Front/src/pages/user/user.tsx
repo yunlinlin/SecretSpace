@@ -14,11 +14,6 @@ type PageState = {}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps;
 
-// interface User {
-//   state: PageState;
-//   props: IProps;
-// }
-
 const app = Taro.getApp();
 const list = ['我的发布', '我的日程', '我的预约', '我的反馈', '管理员页面', '联系我们'];
 

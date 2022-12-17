@@ -1,42 +1,39 @@
-.activity_list{
-    display: flex;
-    width: 400px;
-    -ms-flex-direction:column;
-    flex-direction:column;
-  }
-.activity_list Text{
+.list{
+  width: 690rpx;
+  margin: 20rpx 20rpx;
+  padding: 20rpx 10rpx;
+  border: 3rpx solid rgb(27, 149, 210);
+  border-radius: 2mm;
+}
+
+.option{
+  display: flex;
+  justify-content: space-between;
+}
+
+.appoint-option{
+  display: flex;
+  justify-content: flex-end;
+  height: 60rpx;
   width: 100%;
-  height: 100rpx;
-  line-height: 100rpx;
-  color: #b0b5b8ee;
 }
-.activityTag{
-  margin-top: 10px;
-  margin-right: 15px;
-  background-color: #d787e2ee;
-  color: #f5f3f3ee;
+
+.edit, .delete{
+  display: flex;
+  margin: 0 20rpx;
+  padding: auto 10rpx;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2mm;
+  line-height: 32rpx;
+  font-size: 30rpx;
+  color: rgb(255, 255, 255);
 }
-.gap-2{
-  width:100%;
-  height:20rpx;
+
+.edit{
+  background-color: rgb(4, 130, 0);
 }
-.adminIcon{
-  position:relative;
-  text-align: right;
+
+.delete{
+  background-color: rgb(210, 15, 0);
 }
-.message{
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 20px;
-  font-size: 22px;
-  color:rgb(238, 27, 27);
-}
-.deny{
-  visibility: hidden;
-}
-// .permit{
-//   float:right;
-// }
-// .delete{
-//   float:right;
-// }

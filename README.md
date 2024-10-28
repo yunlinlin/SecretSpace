@@ -1,2 +1,2 @@
 # Secret Place
-An online platform for my lover to share her life and relief
+An online platform for my lover to share her life and relieve herself

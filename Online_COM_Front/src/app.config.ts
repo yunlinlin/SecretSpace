@@ -18,12 +18,12 @@ export default defineAppConfig({
     'pages/rent/rent',
     'pages/FeedBack/FeedBack',
     'pages/appointTime/appointTime',
-    'pages/adminID/adminID',
-    'pages/adminPage/adminPage',
+    'pages/admin/admin',
     'pages/user/user',
     'pages/userFunc/userFunc',
     'pages/Detail/Detail',
-    'pages/edit/edit'
+    'pages/edit/edit',
+    'pages/reset/reset'
   ],
   window: {
     backgroundTextStyle: 'light',

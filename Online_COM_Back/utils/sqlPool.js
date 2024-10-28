@@ -83,11 +83,10 @@ pool.transcation = function(sqls, params) {
 			  });
 			}).catch((error) => {
 			  // 多条sql语句执行中 其中有一条报错 直接回滚
-			  connection.rollback(function () {
-				console.log("sql运行失败: " + error);
-				connection.release();
+			  	connection.rollback(function () {
+					console.log("sql运行失败: " + error);
+					connection.release();
 			  });
-			  reject(error);
 			});
 		});
 	  });

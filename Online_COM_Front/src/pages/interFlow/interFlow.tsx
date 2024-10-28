@@ -16,7 +16,6 @@ type PageState = {
   current : number,
   timeRange : number,
   scrollViewHeight : number,
-  timer : any,
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -35,13 +34,11 @@ class interFlow extends Component{
       current: 0,
       timeRange: 3,
       scrollViewHeight: 100,
-      timer: '',
     }
   }
 
   componentDidMount(){
-    this.setState({
-      timer: setTimeout(() => {
+    this.timer = setTimeout(() => {
       let query = Taro.createSelectorQuery();
       query.select('#tab').boundingClientRect();
       query.select('#range').boundingClientRect();
@@ -53,22 +50,21 @@ class interFlow extends Component{
             scrollViewHeight: scrollViewHeight,
         });
       });
-      }, 200)
-    })
+    }, 200);
   }
 
-  componentWillReceiveProps () { }
-
   componentWillUnmount () {
-    clearTimeout(this.state.timer);
-   }
+    clearTimeout(this.timer);
+  }
+
+  timer;
 
   componentDidShow () {
     this.render();
   }
 
   componentDidHide () {
-    clearTimeout(this.state.timer);
+    clearTimeout(this.timer);
   }
 
   PageSelect(value){

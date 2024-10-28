@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import Taro from '@tarojs/taro'
 import Post from '../config/post'
 import './app.scss'
 
@@ -7,10 +6,7 @@ const post = new Post('');
 
 class App extends Component{
 
-  componentDidMount () {
-    let windowHeight = Taro.getSystemInfoSync().windowHeight;
-    Taro.setStorageSync('windowHeight', windowHeight);
-  }
+  componentDidMount () {}
 
   componentDidShow () {}
 
@@ -23,8 +19,10 @@ class App extends Component{
       userInfo : null,
     },
     config:{
-        api: 'http://172.20.10.2:3000',  // 接口基础地址
-        file: 'http://172.20.10.2:3000',  // 文件基础地址
+        // api: 'https://www.rain-forest.top',  // 接口基础地址
+        // file: 'http://www.rain-forest.top',  // 文件基础地址
+        api: 'https://localhost:3000',  // 接口基础地址
+        file: 'http://localhost:3000',  // 文件基础地址
     },
     auth:{
       user: '1479815803@qq.com',

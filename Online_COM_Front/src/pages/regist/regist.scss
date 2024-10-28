@@ -1,83 +1,139 @@
 .container{
-    margin: 10% auto;
+    width: 100%;
+    height: 100%;
 }
-.container Text{
-    margin: 0 auto;
-    font-size: 50px;
+
+.title{
+    margin: 60rpx auto;
+    font-size: 50rpx;
 }
+
+.step{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &-container{
+        position: relative;
+        margin: 0 15rpx;
+        height: 60rpx;
+        width: 60rpx;
+        border-radius: 50%;
+        border: 8rpx solid;
+    }
+    &-num{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        height: 52rpx;
+        width: 52rpx;
+        line-height: 52rpx;
+        font-size: 35rpx;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 50%;
+        color: rgb(255, 255, 255);
+    }
+}
+
 .regist-box{
-    padding-top: 30px;
-    padding-left: 5px;
-    padding-right: 5px;
+    margin-top: 30rpx;
+    padding: 0rpx 5rpx;
     text-align: left;
-    width: 50%;
-    -ms-transform: translateX(-13%);
-    transform:translateX(-13%);
 }
+
 .regist-box Text{
-    // margin-right: 20px;
-    font-size: 35px;
+    font-size: 35rpx;
 }
+
 .input{
-    padding-left: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    width:450px;
-    border-style: solid;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10rpx 10rpx;
+    width: 400rpx;
     border-radius: 2mm;
-    border-width: 3px;
-    border-color: rgb(57, 165, 214);
+    border: 3rpx solid rgb(57, 165, 214);
 }
+
+.hide{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60rpx;
+    height: 36rpx;
+    border-radius: 100%;
+    background-color: rgb(210, 210, 210);
+}
+
+.hide::before{
+    content: '';
+    position: absolute;
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 50%;
+    background-color: rgb(255, 255, 255);
+}
+
+.emailFix{
+    position: absolute;
+    right: 10rpx;
+    line-height: 40rpx;
+    font-size: 35rpx;
+    color: rgb(190, 190, 190);
+}
+
 .code{
-    width: 500px;
-  }
+    display: flex;
+    align-items: center;
+    width: 500rpx;
+}
+
 .code-input{
-    padding-left: 10px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    width: 200px;
+    padding: 10rpx 10rpx;
+    width: 200rpx;
     border-style: solid;
     border-radius: 2mm;
-    border-width: 3px;
+    border-width: 3rpx;
     border-color: rgb(57, 165, 214);
-    display:block;
-    // align-items: center;
-    float: left;
 }
-.update-phone-code{
-    margin-left: 20px;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 14px;
-    padding-bottom: 14px;
+
+.update-mail-code{
+    margin-left: 20rpx;
+    padding: 20rpx 15rpx;
     border-radius: 2mm;
-    font-size: 25px;
+    line-height: 34rpx;
+    font-size: 32rpx;
     background-color: rgb(215, 224, 221);
-    display:block;
-    // align-items: center;
-    float: left;
     text-align: center;
 }
+
 .onloading{
-    color: rgb(187, 192, 190);
+    color: rgb(190, 190, 190);
 }
+
 .message{
     position:absolute;
-    font-size: 22px;
+    font-size: 22rpx;
     color:rgb(238, 27, 27);
 }
+
 .correct{
     visibility: hidden;
-    // position:absolute;
 }
+
 .submit{
     position: relative;
-    top: 40px;
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    font-size: 30px;
+    top: 60rpx;
+    margin: 0 auto;
+    width: fit-content;
+    padding: 20rpx 40rpx;
+    line-height: 35rpx;
+    font-size: 30rpx;
+    text-align: center;
     border-radius: 3mm;
     background-color: rgb(65, 193, 216);
 }

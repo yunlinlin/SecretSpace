@@ -1,29 +1,60 @@
 .container{
     margin: 30% auto;
 }
+
 .title{
     margin: 0 auto;
     font-size: 50rpx;
 }
+
 .login-box{
     padding-top: 30rpx;
+    display: flex;
+    align-items: center;
 }
+
 .login-box Text{
     margin-right: 20px;
     font-size: 35px;
-    vertical-align: middle;
 }
-.login-box Input{
-    padding-left: 10rpx;
-    padding-top: 10rpx;
-    padding-bottom: 10rpx;
-    border-style: solid;
+
+.login-input{
+    padding: 10rpx 10rpx;
+    width: 400rpx;
     border-radius: 2mm;
-    border-width: 3rpx;
-    border-color: rgb(57, 165, 214);
-    display: inline-block;
-    vertical-align: middle;
+    border: 3rpx solid rgb(57, 165, 214);
 }
+
+.input{
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10rpx 10rpx;
+    width: 400rpx;
+    border-radius: 2mm;
+    border: 3rpx solid rgb(57, 165, 214);
+}
+
+.hide{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60rpx;
+    height: 36rpx;
+    border-radius: 100%;
+    background-color: rgb(210, 210, 210);
+}
+
+.hide::before{
+    content: '';
+    position: absolute;
+    width: 20rpx;
+    height: 20rpx;
+    border-radius: 50%;
+    background-color: rgb(255, 255, 255);
+}
+
 .submit{
     position: relative;
     top: 40rpx;

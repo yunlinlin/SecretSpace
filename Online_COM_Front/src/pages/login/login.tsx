@@ -16,8 +16,7 @@ type PageOwnProps = {}
 type PageState = {
   uid : number;
   password : string;
-  timer1 : any;
-  timer2 : any;
+  hide : boolean;
 }
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
@@ -35,27 +34,25 @@ class Login extends Component{
     this.state = {
       uid: 0,
       password: '',
-      timer1: '',
-      timer2: '',
+      hide: true,
     }
   }
 
   componentDidMount(){ }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+  componentWillUnmount () {
+    clearTimeout(this.timer1);
+    clearTimeout(this.timer2);
   }
 
-  componentWillUnmount () {
-    clearTimeout(this.state.timer1);
-    clearTimeout(this.state.timer2);
-  }
+  timer1;
+  timer2;
 
   componentDidShow () { }
 
   componentDidHide () {
-    clearTimeout(this.state.timer1);
-    clearTimeout(this.state.timer2);
+    clearTimeout(this.timer1);
+    clearTimeout(this.timer2);
   }
 
   handOnID(e){
@@ -71,40 +68,39 @@ class Login extends Component{
   }
 
   handOnUserInfo(){
-    this.setState({
-      timer1: setTimeout(() => {
-        Taro.request({
-          url: app.config.api + '/login/loginCheck',
-          method: 'POST',
-          data: {
-            uid: this.state.uid,
-            password: this.state.password,
-          },
-          success: (res) => {
-            if(res.data.message === '登录成功'){
-              Taro.setStorageSync('USER', res.data.token);
-              Taro.setStorageSync('UID', res.data.uid);
-              Taro.setStorageSync('LEVEL', res.data.level);
-              Taro.setStorageSync('NICKNAME', res.data.nickName);
-              Taro.showToast({
-                title: res.data.message,
-                icon: 'success',
-                duration: 2000,
-              })
-              this.setState({
-                timer2: setTimeout(() => Taro.switchTab({url: '../index/index'}), 2100),
-              })
-            }else{
-              Taro.showToast({
-                title:res.data.message,
-                icon: 'error',
-                duration: 2000,
-              })
-            }
+    this.timer1 = setTimeout(() => {
+      Taro.request({
+        url: app.config.api + '/users/loginCheck',
+        method: 'POST',
+        data: {
+          uid: this.state.uid,
+          password: this.state.password,
+        },
+        success: (res) => {
+          if(res.data.message === '登录成功'){
+            Taro.setStorageSync('USER', res.data.token);
+            Taro.setStorageSync('UID', res.data.uid);
+            Taro.setStorageSync('LEVEL', res.data.level);
+            Taro.setStorageSync('NICKNAME', res.data.nickName);
+            Taro.setStorageSync('AVATAR', res.data.avatar);
+            Taro.showToast({
+              title: res.data.message,
+              icon: 'success',
+              duration: 2000,
+            })
+            this.timer2 = setTimeout(() => Taro.switchTab({url: '../index/index'}), 2100);
+          }else{
+            Taro.showToast({
+              title:res.data.message,
+              icon: 'error',
+              duration: 2000,
+            })
           }
-        })
-      }, 100)
-    })
+        }
+      }).catch((error) => {
+
+      })
+    }, 100)
   }
 
   toRegist(){
@@ -121,18 +117,21 @@ class Login extends Component{
         <View className='title'>登陆</View>
         <View className='login-box' >
           <Text>学号:</Text>
-          <Input placeholder='学号' focus onBlur={(e) => this.handOnID(e)} />
+          <Input className='login-input' placeholder='学号' onBlur={(e) => this.handOnID(e)} />
         </View>
         <View className='login-box' >
           <Text>密码:</Text>
-          <Input placeholder='密码' onBlur={(e) => this.handOnPassword(e)} />
+          <View className='input'>
+            <Input id='password' value={this.state.password} placeholder='密码' password={this.state.hide} onInput={(e) => this.handOnPassword(e)} />
+            <View className='hide' onTouchStart={() => {this.setState({hide: false})}} onTouchEnd={() => {this.setState({hide: true})}} />
+          </View>
         </View>
         <View className='submit' onClick={() => this.handOnUserInfo()}>
           登录
         </View>
         <View className='sign-box' >
           <Text onClick={() => this.toRegist()} >前往注册</Text>
-          <Text onClick={() => this.toReset()} >忘记密码？</Text>
+          <Text onClick={() => this.toReset()} >忘记密码</Text>
         </View>
       </View>
     )

@@ -59,7 +59,7 @@
   color: rgb(255, 255, 255);
 }
 
-.close {
+.appoint-close {
   position: absolute;
   right: 20rpx;
   background: rgb(150, 150, 150);
@@ -72,7 +72,7 @@
   line-height: 40rpx;
 }
 
-.close::before {
+.appoint-close::before {
   content: '\2717';
 }
 

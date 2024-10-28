@@ -305,7 +305,7 @@ class Detail extends Component<IProps, PageState>{
   }
 
   render () {
-    if(this.$instance.router?.params.class === 'activity'){
+    if(this.$instance.router?.params.class === 'activity' || 'admin_addChosen'){
       return (
         <View>
           <View className='at-article'>
@@ -440,7 +440,7 @@ class Detail extends Component<IProps, PageState>{
               }) : <View />
           }
           {
-            (this.state.detail.uid !== undefined && this.state.detail.uid !== null && this.state.detail.uid === Taro.getStorageSync('UID')) ? 
+            ((this.state.detail.uid !== undefined && null) && this.state.detail.uid === Taro.getStorageSync('UID')) ? 
               <AtFab className='comment-fab' size='normal' onClick={() => this.ToComment()} >
                 <Text>追加反馈</Text>
               </AtFab> : <View />

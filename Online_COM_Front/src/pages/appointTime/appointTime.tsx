@@ -178,11 +178,11 @@ class AppointTime extends Component<IProps, PageState>{
             <View className='order-title'>
               <View className='symbol'>?</View>
               <Text>预约信息</Text>
-              <View className='close' onClick={() => this.closeOrder()} />
+              <View className='appoint-close' onClick={() => this.closeOrder()} />
             </View>
             <ScrollView
               scrollY
-              style='height: 400px'
+              style='height: 800rpx'
             >
               <View className='order-body'>
                 {
@@ -213,6 +213,7 @@ class AppointTime extends Component<IProps, PageState>{
                 <View className='order-submit' onClick={() => this.uploadAppointTime()}>
                   <Text>确认预约</Text>
                 </View>
+                <View style='display: block; height: 60rpx; width: 100%;' />
               </View>
             </ScrollView>
           </View>

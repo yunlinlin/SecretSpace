@@ -1,0 +1,139 @@
+.container{
+  width: 100%;
+  height: 100%;
+}
+
+.title{
+  margin: 60rpx auto;
+  font-size: 50rpx;
+}
+
+.step{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &-container{
+      position: relative;
+      margin: 0 15rpx;
+      height: 60rpx;
+      width: 60rpx;
+      border-radius: 50%;
+      border: 8rpx solid;
+  }
+  &-num{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      height: 52rpx;
+      width: 52rpx;
+      line-height: 52rpx;
+      font-size: 35rpx;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 50%;
+      color: rgb(255, 255, 255);
+  }
+}
+
+.regist-box{
+  margin-top: 30rpx;
+  padding: 0rpx 5rpx;
+  text-align: left;
+}
+
+.regist-box Text{
+  font-size: 35rpx;
+}
+
+.input{
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10rpx 10rpx;
+  width:450rpx;
+  border-radius: 2mm;
+  border: 3rpx solid rgb(57, 165, 214);
+}
+
+.eye{
+  position: relative;
+  right: -50rpx;
+  width: 52rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background-color: rgb(210, 210, 210);
+}
+
+.eye::before{
+  content: '';
+  position: absolute;
+  top: 6rpx;
+  left: 16rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background-color: rgb(255, 255, 255);
+}
+
+.emailFix{
+  position: absolute;
+  right: 10rpx;
+  line-height: 40rpx;
+  font-size: 35rpx;
+  color: rgb(190, 190, 190);
+}
+
+.code{
+  display: flex;
+  align-items: center;
+  width: 500rpx;
+}
+
+.code-input{
+  padding: 10rpx 10rpx;
+  width: 200rpx;
+  border-style: solid;
+  border-radius: 2mm;
+  border-width: 3rpx;
+  border-color: rgb(57, 165, 214);
+}
+
+.update-mail-code{
+  margin-left: 20rpx;
+  padding: 20rpx 15rpx;
+  border-radius: 2mm;
+  line-height: 34rpx;
+  font-size: 32rpx;
+  background-color: rgb(215, 224, 221);
+  text-align: center;
+}
+
+.onloading{
+  color: rgb(190, 190, 190);
+}
+
+.message{
+  position:absolute;
+  font-size: 22rpx;
+  color:rgb(238, 27, 27);
+}
+
+.correct{
+  visibility: hidden;
+}
+
+.submit{
+  position: relative;
+  top: 60rpx;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 20rpx 40rpx;
+  line-height: 35rpx;
+  font-size: 30rpx;
+  text-align: center;
+  border-radius: 3mm;
+  background-color: rgb(65, 193, 216);
+}

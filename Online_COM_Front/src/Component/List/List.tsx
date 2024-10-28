@@ -161,29 +161,46 @@ class List extends Component<IProps, PageState>{
                 <View key={index1} >
                 {
                 item1.map((item2, index2) => {
-                  if(this.props.class === 'appointment'){
-                    return(
-                      <View className='list' key={index1} >
-                        <View style='padding-bottom: 10rpx;line-height: 40rpx; font-size: 32rpx; color: rgb(123, 123, 123); border-bottom: 3rpx solid rgb(123, 123, 123)' >{item2.created_at}</View>
-                        <View style='padding: 10rpx'>{'预约日期:\t' + item2.date}</View>
-                        <View style='padding: 10rpx; display: flex; flex-wrap: wrap; align-item: center'>{'预约时间段:\xa0'}
-                        {
-                          item2.selectIndex.map((item3, index3) => {
-                            return(
-                              <View key={index3} >{(timeList[item2.room])[Math.floor(item3/4)][item3%4] + '\xa0'}</View>
-                            )
-                          })
-                        }
+                  switch(this.props.class){
+                    case 'appointment':
+                      return(
+                        <View className='list' key={index1} >
+                          <View style='padding-bottom: 10rpx;line-height: 40rpx; font-size: 32rpx; color: rgb(123, 123, 123); border-bottom: 3rpx solid rgb(123, 123, 123)' >{item2.created_at}</View>
+                          <View style='padding: 10rpx'>{'预约日期:\t' + item2.date}</View>
+                          <View style='padding: 10rpx; display: flex; flex-wrap: wrap; align-item: center'>{'预约时间段:\xa0'}
+                          {
+                            item2.selectIndex.map((item3, index3) => {
+                              return(
+                                <View key={index3} >{(timeList[item2.room])[Math.floor(item3/4)][item3%4] + '\xa0'}</View>
+                              )
+                            })
+                          }
+                          </View>
+                          <View style='padding: 10rpx'>{'预约事由:\t' + item2.reason}</View>
+                          <View className='appoint-option'>
+                            <View className='delete' style='width: 30%' onClick={() => this.toDelete(this.props.url, item2.id, 'appointment', {appointId: item2.appointId, selectIndex: JSON.stringify(item2.selectIndex)})} >取消预约</View>
+                          </View>
                         </View>
-                        <View style='padding: 10rpx'>{'预约事由:\t' + item2.reason}</View>
-                        <View className='appoint-option'>
-                          <View className='delete' style='width: 30%' onClick={() => this.toDelete(this.props.url, item2.id, 'appointment', {appointId: item2.appointId, selectIndex: JSON.stringify(item2.selectIndex)})} >取消预约</View>
+                      )
+                    case 'admin_addChosen':
+                      return(
+                        <View className='list' key={index2} >
+                        <View onClick={() => this.toDetail(item2.classify, item2.id)} >
+                          <View style='padding-bottom: 10rpx;line-height: 40rpx; font-size: 32rpx; color: rgb(123, 123, 123); border-bottom: 3rpx solid rgb(123, 123, 123)' >{item2.created_at}</View>
+                          <View style='padding: 10rpx'>{item2.topicValue}</View>
+                        </View>
+                        <View className='select-option'>
+                          {
+                            item2.selected === 0 ? 
+                            <View className='edit' style='width: 30%' onClick={() => this.toEdit(item2.classify, item2.id)} >活动加精</View> :
+                            <View className='delete' style='width: 30%' onClick={() => this.toDelete(this.props.url, item2.id, item2.classify)} >取消加精</View>
+                          }
                         </View>
                       </View>
-                    )
-                  }else{
-                    return(
-                      <View className='list' key={index2} >
+                      )
+                    default:
+                      return(
+                        <View className='list' key={index2} >
                         <View onClick={() => this.toDetail(item2.classify, item2.id)} >
                           <View style='padding-bottom: 10rpx;line-height: 40rpx; font-size: 32rpx; color: rgb(123, 123, 123); border-bottom: 3rpx solid rgb(123, 123, 123)' >{item2.created_at}</View>
                           <View style='padding: 10rpx'>{item2.topicValue}</View>
@@ -193,7 +210,7 @@ class List extends Component<IProps, PageState>{
                           <View className='delete' onClick={() => this.toDelete(this.props.url, item2.id, item2.classify)} >删除</View>
                         </View>
                       </View>
-                    )
+                      )
                   }
                 })
               }

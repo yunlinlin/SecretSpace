@@ -1,4 +1,4 @@
-export const Page = {
+export const index_page = {
     data: {
         tb:"",
         banner3_title: "",

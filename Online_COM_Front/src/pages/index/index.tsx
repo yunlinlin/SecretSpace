@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { Component } from 'react'
-import { View, Text ,Image, Input, Swiper, SwiperItem } from '@tarojs/components'
-import { Page } from '../../Constant/func_list'
+import { View, Text ,Image, Swiper, SwiperItem } from '@tarojs/components'
+import { index_page } from '../../Constant/func_list'
 import './index.scss'
 
 // #region 书写注意
@@ -127,36 +127,31 @@ class Home extends Component<IProps, PageState>{
             </View>
         </View>
         <View className='banner'>
-          <Swiper indicator-dots autoplay interval={Page.data.interval} duration={Page.data.duration}>
-              {
-                Page.data.imgUrls.map((item,index) => {
-                  return (
-                  <SwiperItem key={index}>
-                        <Image className='slide-image' src={item} />
-                  </SwiperItem>)
-                })
-              }
+          <Swiper indicator-dots autoplay interval={index_page.data.interval} duration={index_page.data.duration}>
+          {
+            index_page.data.imgUrls.map((item,index) => {
+              return (
+              <SwiperItem key={index}>
+                <Image className='slide-image' src={item} />
+              </SwiperItem>)
+            })
+          }
           </Swiper>
         </View >
         <Image className='banner-2' src='http://img.alicdn.com/tps/TB13LWiOXXXXXbJXFXXXXXXXXXX-1125-336.png' onClick={() => this.handOnCheck()} />
         <View  className='menu-wrp'>         
-              {
-                Page.data.menu.imgUrls.map((item,index) => {
-                  return(
-                    <View key={index} className='menu-list' data-id={index} onClick={(e) => this.handleClick(e)}>
-                      <Image className='menu-img' src={item} />
-                      <View className='menu-desc'>{Page.data.menu.descs[index]}</View>
-                    </View>
-                  )
-                })
-              }        
+        {
+          index_page.data.menu.imgUrls.map((item,index) => {
+            return(
+              <View key={index} className='menu-list' data-id={index} onClick={(e) => this.handleClick(e)}>
+                <Image className='menu-img' src={item} />
+                <View className='menu-desc'>{index_page.data.menu.descs[index]}</View>
+              </View>
+            )
+          })
+        }        
         </View>
         <View className='gap-1'></View >
-        {/* <View className='tb-toppest'>
-          <Image src='http://gw.alicdn.com/tps/i3/TB12wM3HXXXXXbxapXXdFmWHFXX-207-60.png?imgtag=avatar' ></Image>
-          <View className='btn'>双11</View>
-          <View className='content'>你家跑步机有那么安静吗?</View>
-        </View > */}
         <View className='gap-2'></View >
         <View className='tab' id='tab'>
           {

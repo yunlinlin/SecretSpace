@@ -1,6 +1,4 @@
-// const { mysql } = require('access-db')
 const jwt = require('jsonwebtoken')
-const pool = require('./sqlPool')
 
 const genToken = (uid, level) => {
     const jwt = require('jsonwebtoken')
@@ -54,17 +52,6 @@ class AuthUse{
             if(becode.level < this.level){
                 res.status(401).send('权限不足');
             }
-            // const select = 'SELECT uid, avatar, nickname FROM users WHERE uid = ? AND level = ?';
-            // const selectParams = [becode.id, becode.level];
-            // pool.query(select, selectParams, function(err, result){
-            //     if(err){
-            //         console.log('获取用户信息失败');
-            //     }else{
-            //         console.log('获取用户信息成功');
-            //         req.user = result[0];
-            //     }
-            // })
-            // req.user = (await mysql.get('users', [becode.uid, becode.level])).data
             await next()
         }
     }

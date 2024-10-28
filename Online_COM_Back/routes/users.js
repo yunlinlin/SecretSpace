@@ -1,5 +1,4 @@
 const express = require('express');
-// const { mysql } = require('access-db');
 let pool = require('../utils/sqlPool')
 const { AuthUse } = require('../utils/jwt');
 const nodemailer = require('nodemailer');
@@ -7,7 +6,7 @@ const { getTime } = require('../utils/Time');
 const { genToken } = require('../utils/jwt');
 let usersRouter = express.Router();
 
-/* GET users listing. */
+/* Users regist and login. */
 usersRouter.post('/isLogin', new AuthUse(1).w, (req, res, next) => {
   res.status(200).send('登录成功');
 });
@@ -22,23 +21,16 @@ usersRouter.get('/unique', async (req, res, next) => {
   try{
     pool.sqlQuery(select, selectParam, function(err, result){
       if(err){
-        console.log('查询数据失败');
+        console.log(err);
+        res.status(500).send('查询错误!');
       }else{
-        console.log('查询数据成功');
-        res.json(result);
+        res.status(200).json(result);
       }
     })
   }catch(err){
-    res.status(500).send('网络错误!');
+    res.status(500).send('查询错误!');
   }
-  });
-
-  // let list = (await mysql.find('users', {
-  //     p0:['uid', '=', uid],
-  //     p1:['email', '=', address],
-  //     r: 'p0 || p1',
-  // })).data.objects;
-  // res.json(list);
+});
 
 usersRouter.post('/sendEmail', async (req, res, next) => {
   const { code, email } = req.body;
@@ -63,54 +55,37 @@ usersRouter.post('/sendEmail', async (req, res, next) => {
       return;
     }
     console.log('发送成功');
+    res.status(200);
   })
 })
 
 usersRouter.post('/addInfo', async (req, res, next) => {
-  let {uid, name, password, email} = req.body;
-  uid = JSON.parse(uid);
+  const {uid, name, nickName, phoneNum, password, email} = req.body;
   let nowTime = getTime('date_time');
   avatarURL = '/defaultFigure.jpg'
-  const addSql = 'INSERT INTO users(uid, name, avatar, nickname, password, email, created_at, updated_at, level) values(?, ?, ?, ?, ?, ?, ?, ?)';
-  const addSqlParams = [uid, name, avatarURL, name, password, email, nowTime, nowTime, 1];
+  const addSql = 'INSERT INTO users(uid, name, avatar, nickname, phone, password, email, created_at, updated_at, level) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const addSqlParams = [JSON.parse(uid), name, avatarURL, nickName.length > 0 ? nickName : name, JSON.parse(phoneNum), password, email, nowTime, nowTime, 1];
   try{
     pool.sqlQuery(addSql, addSqlParams, function(err, result){
       if(err){
-        console.log('添加数据失败');
+        console.log(err);
+        res.status(500).json('服务器错误!');
       }else{
         console.log('添加数据成功');
         res.json({
           data: {
             token: genToken(uid, 1),
             uid: uid,
+            avatar: '/defaultFigure.jpg',
             nickname: name,
           },
-          message : '成功',
+          message : '注册成功',
         })
       }
     })
   }catch(err){
-    res.status(500).send('网络错误!');
+    res.status(500).send('服务器错误!');
   }
-
-  // let setRes = (await mysql.set('users', {
-  //     // uid: uid,
-  //     // name: name,
-  //     // password: password,
-  //     // email: email,
-  //     // created_at: nowTime,
-  //     // updated_at: nowTime,
-  //     level: 1,
-  // }));
-  // let resUser = {
-  //   ...setRes.data,
-  //   token: genToken(uid, 1),
-  //   uid: uid,
-  // }
-  // res.json({
-  //   data: resUser,
-  //   message : '成功',
-  // })
 })
 
 usersRouter.get('/getInfo', new AuthUse(1).w, async (req, res, next) => {
@@ -125,8 +100,7 @@ usersRouter.get('/getInfo', new AuthUse(1).w, async (req, res, next) => {
         console.log('查询数据成功');
         if(result.length !== 0){
           res.json({
-            nickName: result[0].nickname,
-            avatar: result[0].avatar,
+            name: result[0].name,
             message : '查询成功',
           })
         }
@@ -135,15 +109,90 @@ usersRouter.get('/getInfo', new AuthUse(1).w, async (req, res, next) => {
   }catch(err){
     res.status(500).send('网络错误!');
   }
-  // let setRes = (await mysql.find('users', {
-  //   p0:['uid', '=', uid],
-  //   r: 'p0',
-  // })).data.objects[0];
-  // res.json({
-  //   nickName: setRes.nickname,
-  //   avatar: setRes.avatar,
-  //   message : '成功',
-  // })
+})
+
+usersRouter.post('/loginCheck', async function(req, res, next){
+  let { uid, password } = req.body;
+  const select = 'SELECT * from users WHERE uid = ? ';
+  const selectParam = [uid];
+  pool.sqlQuery(select, selectParam, function(err, result){
+    if(err){
+      console.log('查询数据失败');
+    }else{
+      console.log('查询数据成功');
+      if(result.length !== 0){
+        if(result[0].password === password){
+          res.json({
+            token: genToken(result[0].uid, result[0].level),
+            uid: result[0].uid,
+            level: result[0].level,
+            nickName: result[0].nickname,
+            avatar: result[0].avatar,
+            message: '登录成功'
+          })
+        }else{
+          res.json({
+            message: '密码错误',
+          });
+        }
+      }else{
+        res.json({
+          message: '用户不存在',
+        });
+      }
+    }
+  });
+})
+
+usersRouter.post('/passwordReset', async (req, res, next) => {
+  const { email, password } = req.body;
+  let nowTime = getTime('date_time');
+  const update = 'UPDATE users SET password = ?, updated_at = ? WHERE email = ?'
+  const updateParams = [password, nowTime, email];
+  try{
+    pool.sqlQuery(update, updateParams, function(err, result){
+      if(err){
+        res.status(500).json('重置密码失败');
+        console.log(err);
+      }else{
+        res.status(200).json('重置密码成功');
+      }
+    });
+  }catch(err){
+    res.status(500).send('服务器错误!');
+  }
+})
+
+usersRouter.post('/admin', new AuthUse(1).w, async function(req, res, next){
+  const { secretKey } = req.body;
+  const uid = req.headers.uid;
+  const select = 'SELECT * from admin WHERE uid = ? OR secretKey = ? ';
+  const selectParam = [uid, secretKey];
+  pool.sqlQuery(select, selectParam, function(err, result){
+    if(err){
+      console.log('查询数据失败');
+    }else{
+      console.log('查询数据成功');
+      if(result.length !== 0){
+        let nowTime = getTime('date_time');
+        const update = 'UPDATE users SET level = ?, updated_at = ? WHERE uid = ?'
+        const updateParams = [result[0].level, nowTime, uid];
+        pool.sqlQuery(update, updateParams, function(err, result){
+          if(err){
+            console.log('更新数据失败');
+          }else{
+            console.log('更新数据成功');
+          }
+        });
+        res.json({
+          token: genToken(uid, result[0].level),
+          level: result[0].level,
+          uid: uid,
+          message: '更新成功',
+        })
+      }
+    }
+  });
 })
 
 module.exports = usersRouter;

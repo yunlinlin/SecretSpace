@@ -1,7 +1,7 @@
 {
     "miniprogramRoot": "dist/",
     "projectname": "Online_COM",
-    "description": "Online Platform for SIGS",
+    "description": "Online Platform for Life Slice",
     "appid": "wxdb22e3401022b9d3",
     "setting": {
         "urlCheck": true,

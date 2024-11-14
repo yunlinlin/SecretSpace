@@ -17,7 +17,7 @@ const CONF = {
      * 开发环境下，MySQL 的初始密码为您的微信小程序 appid
      */
     mysql: {
-        host: '1270.0.0.1',
+        host: '127.0.0.1',
         port: 3306,
         user: 'root',
         db: 'test',
@@ -40,9 +40,6 @@ const CONF = {
     serverHost: 'www.rain-forest.com',
     tunnelServerUrl: 'https://tunnel.ws.qcloud.la',
     tunnelSignatureKey: '27fb7d1c161b7ca52d73cce0f1d833f9f5b5ec89',
-    qcloudAppId: '你的腾讯云 AppID',
-    qcloudSecretId: '你的腾讯云 SecretId',
-    qcloudSecretKey: '你的腾讯云 SecretKey',
     wxMessageToken: 'weixinmsgtoken',
     networkTimeout: 30000
 }

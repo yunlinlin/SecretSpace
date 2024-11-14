@@ -21,8 +21,8 @@ class App extends Component{
     config:{
         // api: 'https://www.rain-forest.top',  // 接口基础地址
         // file: 'http://www.rain-forest.top',  // 文件基础地址
-        api: 'https://localhost:3000',  // 接口基础地址
-        file: 'http://localhost:3000',  // 文件基础地址
+        api: 'http://127.0.0.1:3000',  // 接口基础地址
+        file: 'http://127.0.0.1:3000',  // 文件基础地址
     },
     auth:{
       user: '1479815803@qq.com',

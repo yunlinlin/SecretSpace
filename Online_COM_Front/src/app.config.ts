@@ -49,18 +49,12 @@ export default defineAppConfig({
             "pagePath": "pages/activity/activity",
             "iconPath": "image/cart.png",
             "selectedIconPath": "image/cart_hover.png",
-            "text": "活动日历"
-          },
-          {
-            "pagePath": "pages/appoint/appoint",
-            "iconPath": "image/cart.png",
-            "selectedIconPath": "image/cart_hover.png",
-            "text": "预约"
+            "text": "日历"
           },
           {
             "pagePath": "pages/user/user",
-            "iconPath": "image/mytb.png",
-            "selectedIconPath": "image/mytb_hover.png",
+            "iconPath": "image/cart.png",
+            "selectedIconPath": "image/cart.png",
             "text": "用户中心"
           }
         ]

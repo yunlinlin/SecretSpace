@@ -116,8 +116,8 @@ class Login extends Component{
       <View className='container' >
         <View className='title'>登陆</View>
         <View className='login-box' >
-          <Text>学号:</Text>
-          <Input className='login-input' placeholder='学号' onBlur={(e) => this.handOnID(e)} />
+          <Text>账号:</Text>
+          <Input className='login-input' placeholder='账号' onBlur={(e) => this.handOnID(e)} />
         </View>
         <View className='login-box' >
           <Text>密码:</Text>
